@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro Oficial N.º 2 (100 Preguntas) - Portero/a-Mantenedor/a Ayto. Huelva</title>
+<style>
+  :root {
+    --primary: #004b87;
+    --primary-light: #e6f0fa;
+    --accent: #0077c8;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #cbd5e1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.9rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  header h1 { font-size: 1.05rem; margin: 0; font-weight: 700; }
+  header .sub { font-size: 0.8rem; opacity: 0.9; }
+  .hud { display: flex; align-items: center; gap: 0.75rem; font-weight: 600; font-size: 0.88rem; }
+  .badge { background: rgba(255,255,255,0.18); padding: 0.35rem 0.7rem; border-radius: 6px; }
+  .timer-warn { background: #dc2626 !important; animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity: 0.7; } }
+  .container { max-width: 940px; margin: 1.25rem auto; padding: 0 1rem 4rem; }
+  .rules-box {
+    background: var(--card);
+    border-left: 5px solid var(--accent);
+    padding: 0.95rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    font-size: 0.88rem;
+  }
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.15rem 1.25rem;
+    margin-bottom: 1.1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .q-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.55rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
+    gap: 0.5rem;
+  }
+  .q-tema {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+  }
+  .q-text { font-weight: 600; font-size: 0.98rem; margin-bottom: 0.85rem; }
+  .options { display: flex; flex-direction: column; gap: 0.45rem; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    background: #fff;
+    font-size: 0.94rem;
+  }
+  .option:hover { background: #f8fafc; border-color: var(--accent); }
+  .option.selected { background: var(--primary-light); border-color: var(--primary); font-weight: 500; }
+  .option.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: #14532d; }
+  .option.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: #7f1d1d; }
+  .option input { margin-top: 0.22rem; accent-color: var(--primary); }
+  .explanation {
+    margin-top: 0.8rem;
+    padding: 0.75rem 0.95rem;
+    border-radius: 6px;
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    font-size: 0.86rem;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 1.75rem; }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { opacity: 0.92; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-secondary { background: #475569; color: #fff; }
+  .btn-outline { background: #fff; color: var(--primary); border: 2px solid var(--primary); }
+  .results-panel {
+    display: none;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin-bottom: 1.4rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    border-top: 6px solid var(--primary);
+  }
+  .results-panel.show { display: block; }
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 0.8rem;
+    margin: 1rem 0;
+  }
+  .stat-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem; text-align: center; }
+  .stat-val { font-size: 1.35rem; font-weight: 800; }
+  .stat-lbl { font-size: 0.76rem; color: var(--muted); text-transform: uppercase; }
+  .status-banner { padding: 0.8rem 1rem; border-radius: 8px; font-weight: 700; text-align: center; font-size: 1.02rem; margin-bottom: 1rem; }
+  .apto { background: var(--success-bg); color: var(--success); }
+  .no-apto { background: var(--danger-bg); color: var(--danger); }
+  .filter-bar { display: none; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .filter-bar.show { display: flex; }
+  .filter-btn { padding: 0.45rem 0.85rem; font-size: 0.82rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>SIMULACRO OFICIAL N.º 2 (100 PREGUNTAS) — Portero/a-Mantenedor/a Ayto. Huelva</h1>
+    <div class="sub">100 preguntas inéditas (Temas 1 a 12 + Bases) · Acierto: +0,10 · Fallo: -0,025 (4:1) · Tiempo: 60 min</div>
+  </div>
+  <div class="hud">
+    <span class="badge" id="answeredCount">Respondidas: 0 / 100</span>
+    <span class="badge" id="timer">60:00</span>
+  </div>
+</header>
+
+<div class="container">
+  <div class="rules-box">
+    <strong>Simulacro N.º 2 — Reglas oficiales (BOP Huelva 24/11/2026):</strong> 100 preguntas tipo test con 4 opciones de respuesta. Tiempo límite: <strong>60 minutos</strong>. Cada acierto suma <strong>0,10 puntos</strong> y <strong>cada 4 fallos restan 1 acierto</strong> (-0,025 puntos por error; en blanco 0). Mínimo para superar el ejercicio: <strong>5,00 puntos</strong>.
+  </div>
+
+  <div class="results-panel" id="resultsPanel">
+    <div class="status-banner" id="statusBanner"></div>
+    <div class="score-grid">
+      <div class="stat-box"><div class="stat-val" id="finalScore">0,00</div><div class="stat-lbl">Nota Oficial (/10)</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--success)" id="statOk">0</div><div class="stat-lbl">Aciertos (+0,10)</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--danger)" id="statKo">0</div><div class="stat-lbl">Fallos (-0,025)</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--muted)" id="statBlank">0</div><div class="stat-lbl">En blanco (0)</div></div>
+      <div class="stat-box"><div class="stat-val" id="statNet">0,00</div><div class="stat-lbl">Aciertos netos</div></div>
+    </div>
+    <div class="actions" style="margin-top:0.8rem;">
+      <button class="btn-outline" onclick="resetQuiz(true)">Mezclar preguntas y repetir</button>
+      <button class="btn-secondary" onclick="resetQuiz(false)">Reiniciar mismo orden</button>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="btn-primary filter-btn" onclick="filterQuestions('all')">Todas (100)</button>
+    <button class="btn-secondary filter-btn" onclick="filterQuestions('wrong')">Falladas y en blanco</button>
+    <button class="btn-outline filter-btn" onclick="filterQuestions('B1')">Bloque Jurídico y Bases (T1-T3)</button>
+    <button class="btn-outline filter-btn" onclick="filterQuestions('B2')">Conserjería y Oficina (T4-T8)</button>
+    <button class="btn-outline filter-btn" onclick="filterQuestions('B3')">Mantenimiento/PRL/Huelva (T9-T12)</button>
+  </div>
+
+  <form id="quizForm"></form>
+
+  <div class="actions" id="bottomActions">
+    <button type="button" class="btn-primary" onclick="gradeQuiz()">Finalizar y Corregir Simulacro</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS_DATA = [
+  // BLOQUE 1: BASES Y TEMAS 1 A 3 (24 preguntas)
+  { b:"B1", tema:"Bases Convocatoria", q:"Según la Base 3.ª de la convocatoria de Portero/a-Mantenedor/a del Ayuntamiento de Huelva, ¿cuál es el importe de la tasa general y de la tasa reducida por presentación y pago telemático?", opts:["Tarifa general 60 € y tarifa reducida 54 €.","Tarifa general 40 € y tarifa reducida 20 €.","Tarifa general 30 € y tarifa reducida 15 €.","Es gratuita para todos los aspirantes sin excepción."], ans:0, exp:"Base 3.ª: Tarifa General 60 euros; Tarifa Reducida 54 euros (por solicitud y pago telemático). Además, hay bonificación del 50 % para discapacidad >=33 %, demandantes de empleo (>=3 meses) o familia numerosa." },
+  { b:"B1", tema:"Bases Convocatoria", q:"¿Cuál es la puntuación máxima total del proceso selectivo de concurso-oposición de Portero/a-Mantenedor/a en el Ayuntamiento de Huelva?", opts:["10 puntos (8 oposición + 2 concurso).","13 puntos (hasta 10 en fase de oposición + hasta 3 en fase de concurso).","15 puntos (10 oposición + 5 concurso).","20 puntos."], ans:1, exp:"Base 4.ª y 5.ª: Fase de Oposición máximo 10 puntos (más prueba psicotécnica Apto/No Apto) y Fase de Concurso máximo 3 puntos (2 experiencia + 1 méritos académicos)." },
+  { b:"B1", tema:"Bases Convocatoria", q:"En caso de empate en la puntuación final del proceso selectivo de Portero/a-Mantenedor/a del Ayuntamiento de Huelva, ¿cuál es el primer criterio de desempate?", opts:["El sorteo público directo.","La mayor edad del aspirante.","La mayor puntuación obtenida en la Fase de Oposición.","El orden alfabético del primer apellido."], ans:2, exp:"Base 5.ª: 1.º Mayor puntuación en la Fase de Oposición; 2.º Mayor puntuación en Concurso (primero experiencia y luego méritos académicos); 3.º Sorteo público." },
+  { b:"B1", tema:"Tema 1 · CE 1978", q:"¿Dónde reside la soberanía nacional según el artículo 1.2 de la Constitución Española de 1978?", opts:["En las Cortes Generales.","En el Rey.","En el pueblo español, del que emanan los poderes del Estado.","En el Gobierno de la Nación."], ans:2, exp:"Art. 1.2 CE: La soberanía nacional reside en el pueblo español, del que emanan los poderes del Estado." },
+  { b:"B1", tema:"Tema 1 · CE 1978", q:"¿Qué Título de la Constitución Española de 1978 regula 'De la Organización Territorial del Estado'?", opts:["Título I.","Título IV.","Título VIII.","Título X."], ans:2, exp:"El Título VIII de la CE (arts. 137 a 158) regula la Organización Territorial del Estado (principios generales, Administración Local y Comunidades Autónomas)." },
+  { b:"B1", tema:"Tema 1 · CE 1978", q:"Según el artículo 9.3 de la Constitución Española, la Constitución garantiza:", opts:["La retroactividad de las disposiciones sancionadoras no favorables.","La irretroactividad de las disposiciones sancionadoras no favorables o restrictivas de derechos individuales.","La arbitrariedad de los poderes públicos.","El secreto de las normas jurídicas."], ans:1, exp:"Art. 9.3 CE garantiza la irretroactividad de las disposiciones sancionadoras no favorables o restrictivas de derechos individuales, así como la interdicción de la arbitrariedad." },
+  { b:"B1", tema:"Tema 1 · Estatuto Andalucía", q:"Conforme al artículo 3 del Estatuto de Autonomía para Andalucía, ¿cuál es el Día de Andalucía?", opts:["El 4 de diciembre.","El 28 de febrero.","El 19 de marzo.","El 6 de diciembre."], ans:1, exp:"Art. 3.4 del Estatuto de Autonomía (LO 2/2007): El Día de Andalucía es el 28 de febrero." },
+  { b:"B1", tema:"Tema 1 · Estatuto Andalucía", q:"Según el artículo 5 del Estatuto de Autonomía para Andalucía, gozan de la condición política de andaluces o andaluzas:", opts:["Únicamente los nacidos en alguna de las ocho provincias andaluzas.","Los ciudadanos españoles que, de acuerdo con las leyes generales del Estado, tengan vecindad administrativa en cualquiera de los municipios de Andalucía.","Todos los turistas que visiten Andalucía durante más de 15 días.","Solo quienes posean bienes inmuebles en Andalucía."], ans:1, exp:"Art. 5.1 Estatuto: Gozan de la condición política de andaluces los ciudadanos españoles que tengan vecindad administrativa en cualquiera de los municipios de Andalucía." },
+  { b:"B1", tema:"Tema 1 · Régimen Local", q:"Según el artículo 141 de la Constitución Española, el gobierno y la administración autónoma de las provincias estarán encomendados a:", opts:["Los Ayuntamientos.","Las Diputaciones u otras Corporaciones de carácter representativo.","Los Subdelegados del Gobierno exclusivamente.","Las Comarcas."], ans:1, exp:"Art. 141.2 CE: El gobierno y la administración autónoma de las provincias estarán encomendados a Diputaciones u otras Corporaciones de carácter representativo." },
+  { b:"B1", tema:"Tema 1 · Régimen Local", q:"¿Cuál de las siguientes entidades tiene la consideración de Entidad Local no territorial (potestativa) según el art. 3.2 de la Ley 7/1985 (LBRL)?", opts:["El Municipio.","La Provincia.","La Mancomunidad de Municipios.","La Isla en los archipiélagos."], ans:2, exp:"Art. 3.2 LBRL: Gozan asimismo de la condición de Entidades Locales las Comarcas, las Áreas Metropolitanas y las Mancomunidades de Municipios." },
+  { b:"B1", tema:"Tema 2 · Ley 39/2015", q:"Según el artículo 2 de la Ley 39/2015 (LPACAP), ¿por qué normativa se rigen las Universidades públicas?", opts:["Exclusivamente por el Código Civil.","Por su normativa específica y supletoriamente por las previsiones de la Ley 39/2015.","Únicamente por las ordenanzas municipales.","No forman parte del sector público institucional."], ans:1, exp:"Art. 2.2.c LPACAP: Las Universidades públicas se regirán por su normativa específica y supletoriamente por las previsiones de esta Ley." },
+  { b:"B1", tema:"Tema 2 · Ley 39/2015", q:"Conforme al artículo 4 de la Ley 39/2015, ¿quiénes se consideran interesados en el procedimiento administrativo sin haberlo iniciado cuando sus intereses legítimos puedan resultar afectados por la resolución?", opts:["Cualquier ciudadano que lo solicite aunque no tenga interés alguno.","Aquellos cuyos intereses legítimos, individuales o colectivos, puedan resultar afectados por la resolución y se personen en el procedimiento en tanto no haya recaído resolución definitiva.","Únicamente los funcionarios instructores.","Solo los familiares de primer grado del solicitante."], ans:1, exp:"Art. 4.1.c LPACAP: Requiere que sus intereses legítimos puedan resultar afectados y que se personen antes de que recaiga resolución definitiva." },
+  { b:"B1", tema:"Tema 2 · Ley 39/2015", q:"¿De qué modo puede acreditarse la representación ante las Administraciones Públicas según el artículo 5.4 de la Ley 39/2015?", opts:["Únicamente mediante escritura pública ante notario.","Por cualquier medio válido en Derecho que deje constancia fidedigna de su existencia, o mediante declaración en comparecencia personal o comparecencia electrónica en sede (apoderamiento apud acta).","Basta una llamada telefónica sin identificación.","No se admite ningún tipo de representación en los Ayuntamientos."], ans:1, exp:"Art. 5.4 LPACAP admite cualquier medio válido en Derecho que deje constancia fidedigna o apoderamiento apud acta presencial o electrónico." },
+  { b:"B1", tema:"Tema 2 · Ley 40/2015", q:"Según el artículo 23.3 de la Ley 40/2015 (LRJSP), la actuación de autoridades y personal al servicio de las Administraciones Públicas en los que concurran motivos de abstención:", opts:["Implicará siempre y automáticamente la nulidad de pleno derecho de todos los actos.","No implicará, necesariamente, y en todo caso, la invalidez de los actos en que hayan intervenido, sin perjuicio de la responsabilidad que proceda.","Conlleva la disolución del órgano colegiado.","No genera ningún tipo de responsabilidad disciplinaria."], ans:1, exp:"Art. 23.3 LRJSP: No implicará necesariamente y en todo caso la invalidez de los actos, aunque dará lugar a la responsabilidad que proceda." },
+  { b:"B1", tema:"Tema 2 · Ley 40/2015", q:"Conforme al artículo 24.5 de la Ley 40/2015, contra las resoluciones adoptadas en materia de recusación:", opts:["Cabe recurso de alzada en el plazo de un mes.","Cabe recurso potestativo de reposición.","No cabrá recurso, sin perjuicio de la posibilidad de alegar la recusación al interponer el recurso que proceda contra el acto que ponga fin al procedimiento.","Cabe recurso de casación directo."], ans:2, exp:"Art. 24.5 LRJSP: Contra las resoluciones adoptadas en esta materia no cabrá recurso, pudiendo alegarse al recurrir la resolución final." },
+  { b:"B1", tema:"Tema 2 · Ley 40/2015", q:"Es motivo de abstención previsto en el artículo 23 de la Ley 40/2015:", opts:["Haber intervenido como perito o como testigo en el procedimiento de que se trate.","Conocer de vista al interesado por vivir en el mismo municipio.","Haber atendido al ciudadano en la ventanilla de información.","Tener la misma edad que el solicitante."], ans:0, exp:"Art. 23.2.d LRJSP: Haber intervenido como perito o como testigo en el procedimiento de que se trate." },
+  { b:"B1", tema:"Tema 3 · Haciendas Locales", q:"Según el RDL 2/2004 (TRLRHL), ¿qué tributo local tiene como hecho imponible la obtención por el sujeto pasivo de un beneficio o de un aumento de valor de sus bienes como consecuencia de la realización de obras públicas o del establecimiento o ampliación de servicios públicos?", opts:["El Impuesto sobre Bienes Inmuebles (IBI).","La Contribución Especial.","El Precio Público.","La Multa coercitiva."], ans:1, exp:"Art. 28 TRLRHL: Define las contribuciones especiales por obras públicas o establecimiento/ampliación de servicios públicos." },
+  { b:"B1", tema:"Tema 3 · Haciendas Locales", q:"¿Cuál de los siguientes impuestos locales tiene carácter POTESTATIVO (es decir, el Ayuntamiento puede decidir si lo exige o no) según el TRLRHL?", opts:["El Impuesto sobre Bienes Inmuebles (IBI).","El Impuesto sobre Construcciones, Instalaciones y Obras (ICIO).","El Impuesto sobre Actividades Económicas (IAE).","El Impuesto sobre Vehículos de Tracción Mecánica (IVTM)."], ans:1, exp:"Son potestativos el ICIO y el IIVTNU (Plusvalía); son obligatorios el IBI, el IAE y el IVTM." },
+  { b:"B1", tema:"Tema 3 · Igualdad y LGTBI", q:"¿Qué artículo de la Constitución Española encomienda a los poderes públicos promover las condiciones para que la libertad y la igualdad del individuo y de los grupos sean reales y efectivas, y remover los obstáculos que impidan o dificulten su plenitud?", opts:["El artículo 9.2.","El artículo 18.1.","El artículo 56.","El artículo 149."], ans:0, exp:"El art. 9.2 CE consagra el mandato de igualdad material o real y efectiva." },
+  { b:"B1", tema:"Tema 3 · Igualdad y LGTBI", q:"¿Cuál es la Ley autonómica andaluza que garantiza los derechos, la igualdad de trato y no discriminación de las personas LGTBI y sus familiares en Andalucía?", opts:["Ley 8/2017, de 28 de diciembre.","Ley 7/1985, de 2 de abril.","Ley 31/1995, de 8 de noviembre.","Ley 43/2010, de 30 de diciembre."], ans:0, exp:"La Ley 8/2017, de 28 de diciembre, regula la igualdad de trato y no discriminación de las personas LGTBI en Andalucía (junto con la Ley estatal 4/2023)." },
+  { b:"B1", tema:"Tema 3 · Protección de Datos", q:"En el tratamiento de imágenes mediante cámaras de videovigilancia en edificios públicos (art. 22 LOPDGDD), si las grabaciones acreditan la comisión de actos que atenten contra la integridad de personas, bienes o instalaciones, ¿en qué plazo máximo deben ponerse a disposición de la autoridad competente?", opts:["En un plazo máximo de 72 horas desde que se tuviera conocimiento de la existencia de la grabación.","En un plazo de 6 meses.","En un plazo de 2 años.","No deben entregarse nunca."], ans:0, exp:"Art. 22.3 LOPDGDD: Deberán ser puestas a disposición de la autoridad competente en un plazo máximo de 72 horas." },
+  { b:"B1", tema:"Tema 3 · Protección de Datos", q:"¿Qué significa la letra 'S' en el acrónimo de derechos del interesado en protección de datos (ARSOPOL)?", opts:["Sanción.","Supresión (derecho al olvido).","Subvención.","Secuestro."], ans:1, exp:"ARSOPOL: Acceso, Rectificación, Supresión, Oposición, Portabilidad y Limitación del tratamiento." },
+  { b:"B1", tema:"Tema 3 · Protección de Datos", q:"Para cumplir el deber de información en zonas videovigiladas de dependencias municipales (art. 22.4 LOPDGDD), ¿qué debe existir en los accesos?", opts:["Un guardia armado en cada esquina.","Un dispositivo/cartel informativo colocado en lugar suficientemente visible identificando al responsable y la posibilidad de ejercer derechos.","Una autorización judicial individual para cada ciudadano que entra.","Un contrato firmado por cada visitante."], ans:1, exp:"Art. 22.4 LOPDGDD: El deber de información se entiende cumplido mediante la colocación de un dispositivo informativo en lugar suficientemente visible." },
+  { b:"B1", tema:"Bases Convocatoria", q:"En la Fase de Concurso de estas oposiciones, ¿cuántos puntos se otorgan por cada mes completo de servicios prestados en la Administración Local en una plaza de igual nivel y naturaleza que las ofertadas?", opts:["0,05 puntos por mes.","0,10 puntos por mes.","0,15 puntos por mes (hasta un máximo de 2 puntos).","0,50 puntos por mes."], ans:2, exp:"Base 4.ª B): 0,15 puntos/mes en Administración Local y 0,10 puntos/mes en otras Administraciones Públicas (máximo 2 puntos)." },
+
+  // BLOQUE 2: TEMAS 4 A 8 (38 preguntas)
+  { b:"B2", tema:"Tema 4 · Conserjería", q:"¿Cuál de las siguientes tareas NO pertenece a las funciones propias de un Portero/a-Mantenedor/a?", opts:["El traslado y reparto de instrumentos, materiales, documentación y paquetería.","La custodia y control de entrega de llaves de las dependencias.","La fiscalización contable y ordenación de pagos del Ayuntamiento.","El manejo a nivel usuario de equipos informáticos y máquinas reproductoras."], ans:2, exp:"La fiscalización contable y ordenación de pagos corresponde a Intervención y Tesorería, no al personal subalterno." },
+  { b:"B2", tema:"Tema 4 · Conserjería", q:"Durante una jornada de trabajo en un centro municipal, ¿cuándo debe realizarse la revisión de encendido y apagado de los sistemas de calefacción y aire acondicionado?", opts:["Solo una vez al año en agosto.","Diariamente, conforme a los horarios de apertura, ocupación y cierre establecidos en el centro.","Nunca, deben estar encendidos las 24 horas todos los días del año.","Únicamente cuando lo pida un vecino de la calle."], ans:1, exp:"Base 1.ª: Maneja la maquinaria de calefacción y aire acondicionado ajustando su puesta en marcha y parada al horario y necesidades del edificio." },
+  { b:"B2", tema:"Tema 4 · Conserjería", q:"Respecto al uniforme o vestuario laboral y la tarjeta identificativa del personal de conserjería:", opts:["Son opcionales y solo se usan los viernes.","Deben portarse durante toda la jornada laboral en condiciones adecuadas de limpieza y decoro para facilitar su identificación por los usuarios.","Pueden prestarse a personas ajenas al servicio.","Deben guardarse en casa."], ans:1, exp:"La uniformidad e identificación visible generan confianza, seguridad y permiten al ciudadano reconocer al personal del centro." },
+  { b:"B2", tema:"Tema 4 · Conserjería", q:"Si un Portero-Mantenedor recibe el encargo de llevar documentación urgente desde la Casa Consistorial a otra dependencia municipal externa:", opts:["Puede dejarla en una cafetería cercana.","Debe realizar el traslado con diligencia, custodiando en todo momento la integridad y confidencialidad de los documentos hasta su entrega bajo recibo si procede.","Puede abrir los sobres para leerlos durante el trayecto.","Puede delegar el encargo en un transeúnte."], ans:1, exp:"Base 1.ª: Traslada documentación y paquetería tanto interna como externamente guardando diligencia y sigilo." },
+  { b:"B2", tema:"Tema 5 · Atención Ciudadana", q:"Si una persona con discapacidad visual o movilidad reducida acude a una dependencia municipal buscando el Registro General, ¿cómo debe actuar el personal de conserjería?", opts:["Indicarle desde lejos con el dedo hacia el fondo del pasillo.","Acercarse con amabilidad, ofrecerle ayuda verbalmente antes de tocarla o guiarla, acompañarla si lo necesita y facilitar el acceso sin barreras.","Pedirle que vuelva otro día acompañado.","Ignorarla para no incomodarla."], ans:1, exp:"La atención inclusiva requiere ofrecer apoyo de forma respetuosa, preguntar cómo prefiere ser asistida y garantizar accesibilidad efectiva." },
+  { b:"B2", tema:"Tema 5 · Atención Ciudadana", q:"¿Qué diferencia existe entre 'oír' y 'escuchar activamente' en la atención al ciudadano?", opts:["Son exactamente sinónimos.","Oír es un acto físico pasivo de percibir sonidos; escuchar activamente implica prestar atención plena, comprender el mensaje verbal y no verbal y dar retroalimentación al ciudadano.","Escuchar activamente consiste en interrumpir continuamente para acabar las frases del usuario.","Oír requiere tomar apuntes y escuchar no."], ans:1, exp:"La escucha activa exige atención consciente, empatía, ausencia de interrupciones y confirmación de comprensión." },
+  { b:"B2", tema:"Tema 5 · Atención Ciudadana", q:"En la comunicación paraverbal durante la atención al público, ¿qué efecto produce hablar a una velocidad excesivamente rápida y en tono monocorde?", opts:["Transmite cercanía y calma.","Dificulta la comprensión del mensaje y transmite prisa, desinterés o impaciencia.","Mejora la acústica del vestíbulo.","Es obligatorio en las centralitas municipales."], ans:1, exp:"Un ritmo pausado, vocalización clara y entonación cordial facilitan la comprensión y mejoran la calidad percibida." },
+  { b:"B2", tema:"Tema 5 · Atención Ciudadana", q:"Cuando debemos comunicar una negativa a un ciudadano (por ejemplo, que una oficina ya ha cerrado su horario de atención presencial), ¿qué formulación es más asertiva y positiva?", opts:["'¿Es que no sabe leer el cartel de la puerta? Ya está cerrado.'","'Venga mañana si quiere, aquí ya no se atiende a nadie.'","'El horario de atención presencial de esta oficina finaliza a las 14:00 h; si lo desea, puede presentar su escrito en el Registro o volver mañana a partir de las 9:00 h.'","'No es mi problema, hable con el Alcalde.'"], ans:2, exp:"La comunicación positiva y asertiva expone la norma con cortesía y ofrece inmediatamente una alternativa útil al ciudadano." },
+  { b:"B2", tema:"Tema 5 · Atención Telefónica", q:"¿Por qué debe evitarse dejar el auricular del teléfono descolgado encima de la mesa mientras se consulta una duda a un compañero?", opts:["Porque se gasta la batería del cable.","Porque el ciudadano escucha todas las conversaciones de fondo del despacho o mostrador, vulnerando la confidencialidad y dando mala imagen.","Porque se corta la luz del edificio.","Porque se borra el listín telefónico."], ans:1, exp:"Siempre debe pulsarse la tecla de retención/espera ('Hold/Mute') para preservar la privacidad ambiental." },
+  { b:"B2", tema:"Tema 5 · Atención Telefónica", q:"Al deletrear por teléfono un apellido o código difícil para evitar errores de transcripción con el ciudadano, ¿qué técnica se emplea?", opts:["Hablar más rápido.","Utilizar el alfabeto fonético o palabras de referencia ('A de Antonio, L de Lugo...').","Colgar y mandar una carta.","Repetir el código en voz baja."], ans:1, exp:"El deletreo con nombres de referencia garantiza precisión absoluta en nombres propios, correos electrónicos o números de expediente." },
+  { b:"B2", tema:"Tema 5 · Listines Telefónicos", q:"En un listín telefónico de emergencias de un edificio municipal en Huelva, ¿qué números cortos de urgencia deben figurar siempre en lugar destacado?", opts:["112 (Emergencias), 092 (Policía Local), 091 (Policía Nacional), 080 (Bomberos) y 061 (Urgencias Sanitarias).","Únicamente el teléfono de la cafetería cercana.","Solo el prefijo internacional.","Únicamente números de tarificación adicional."], ans:0, exp:"Los teléfonos 112, 092, 091, 080 y 061 son imprescindibles para una respuesta inmediata ante cualquier emergencia." },
+  { b:"B2", tema:"Tema 5 · Listines Telefónicos", q:"¿Cuál es el criterio doble más eficaz para organizar un listín telefónico interno de una gran corporación municipal?", opts:["Por color de pelo de los funcionarios.","Por orden orgánico/departamental (áreas y servicios) y por orden alfabético de personal, indicando extensión y ubicación física.","Por fecha de nacimiento.","Por número de calzado."], ans:1, exp:"La doble entrada (por servicio/departamento y alfabética) permite localizar tanto a una persona concreta como a cualquier miembro disponible de un negociado." },
+  { b:"B2", tema:"Tema 6 · Control de Accesos", q:"En un edificio público dotado de arco detector de metales y escáner de paquetería en el acceso principal, ¿qué deben hacer los visitantes con sus bolsos, mochilas o paquetes?", opts:["Pasarlos por la cinta del escáner de rayos X mientras las personas pasan por el arco detector.","Dejarlos en la acera exterior sin vigilancia.","Entregarlos abiertos para que el conserje saque todas sus pertenencias personales.","Evitar el control rodeando el arco."], ans:0, exp:"Los bultos se inspeccionan mediante escáner sin manipulación manual innecesaria, mientras las personas atraviesan el arco detector." },
+  { b:"B2", tema:"Tema 6 · Control de Accesos", q:"Si una persona pretende acceder a un cuarto técnico (sala de calderas o cuadro eléctrico general) alegando ser técnico de una empresa externa, pero no figura en el aviso previo ni porta acreditación:", opts:["Se le entrega inmediatamente la llave maestra y se le deja solo.","No se le permite el acceso hasta verificar su identidad y confirmar autorización con el responsable del centro o servicio técnico municipal.","Se le deja pasar si lleva ropa de trabajo.","Se le pide que firme en una servilleta."], ans:1, exp:"El acceso a cuartos técnicos críticos exige verificación previa de autorización e identidad y acompañamiento o control estricto." },
+  { b:"B2", tema:"Tema 6 · Apertura y Cierre", q:"Al abrir el edificio por la mañana y desactivar el sistema de alarma contra intrusos, si el teclado indica que se produjo un salto de alarma durante la noche:", opts:["Se borra la memoria sin avisar a nadie.","Se comprueba con precaución el estado de las dependencias (o se avisa a seguridad/Policía Local si hay signos de intrusión) y se comunica la incidencia al responsable del centro.","Se desconecta el cable de la sirena.","Se deja la alarma desconectada para siempre."], ans:1, exp:"Todo salto de alarma nocturno debe verificarse y notificarse al responsable de seguridad/centro para descartar intrusión o avería de sensores." },
+  { b:"B2", tema:"Tema 6 · Apertura y Cierre", q:"Durante la ronda de cierre vespertina, ¿por qué es importante comprobar que todas las ventanas queden bien cerradas además de por evitar robos?", opts:["Para que no entren corrientes de aire que activen los detectores volumétricos de la alarma (falsas alarmas) ni daños por lluvia o viento.","Para que no se escape el oxígeno.","Porque lo exige la ordenanza de tráfico.","No hace falta cerrar las ventanas de las plantas altas."], ans:0, exp:"Las corrientes de aire provocadas por ventanas abiertas mueven cortinas o papeles y son una de las causas más frecuentes de falsas alarmas en sensores volumétricos nocturnos." },
+  { b:"B2", tema:"Tema 6 · Apertura y Cierre", q:"Cuando se presta una llave de un despacho o aula al personal de limpieza o mantenimiento durante la jornada, ¿cómo debe controlarse?", opts:["De memoria sin apuntar nada.","Anotando en el cuaderno o registro de llaves la fecha, código de llave, persona que la retira, hora de entrega y hora de devolución.","Dejando el armario de llaves abierto toda la tarde.","Tirando la llave por debajo de la puerta."], ans:1, exp:"La trazabilidad en el registro de llaves garantiza saber en todo momento quién tiene cada llave bajo su responsabilidad." },
+  { b:"B2", tema:"Tema 6 · Instalaciones", q:"¿Cuál es la función del Interruptor General Automático (IGA) en el Cuadro General de Mando y Protección de un edificio?", opts:["Regular la temperatura del agua caliente.","Proteger la instalación eléctrica general contra sobrecargas y cortocircuitos y permitir el corte general de energía de todo el cuadro.","Encender las luces de emergencia.","Medir la presión del aire acondicionado."], ans:1, exp:"El IGA es el interruptor de cabecera del cuadro que protege globalmente frente a sobrecargas y cortocircuitos y permite cortar toda la instalación." },
+  { b:"B2", tema:"Tema 6 · Instalaciones", q:"Para comprobar periódicamente el correcto funcionamiento mecánico y eléctrico de un Interruptor Diferencial (ID) en el cuadro eléctrico, ¿qué debe hacerse?", opts:["Provocar un cortocircuito con un cable.","Pulsar el botón de prueba ('Test' o 'T') incorporado en el propio diferencial y comprobar que dispara inmediatamente, volviendo a rearmarlo después.","Golpearlo con un destornillador.","Mojar el cuadro con agua."], ans:1, exp:"La pulsación periódica del botón 'T' simula una derivación y verifica que el mecanismo de disparo del diferencial no está agarrotado." },
+  { b:"B2", tema:"Tema 6 · Instalaciones", q:"En relación con el ahorro energético en instalaciones de climatización (calefacción y aire acondicionado) en edificios municipales:", opts:["Es recomendable mantener abiertas las puertas de acceso a la calle mientras funciona el aire acondicionado.","Debe evitarse la apertura innecesaria de puertas y ventanas al exterior mientras los equipos estén funcionando y apagarlos 15-20 minutos antes del cierre aprovechando la inercia térmica.","Debe ponerse la calefacción a 28 °C en invierno.","Debe encenderse la calefacción y el aire acondicionado a la vez."], ans:1, exp:"El cierre de envolventes y el aprovechamiento de la inercia térmica antes del cierre reducen notablemente el consumo energético." },
+  { b:"B2", tema:"Tema 6 · Instalaciones", q:"Si durante la inspección diaria de los medios contra incendios se observa que una Boca de Incendio Equipada (BIE) tiene delante una pila de cajas o mobiliario:", opts:["Se dejan ahí si pesan mucho.","Se retiran inmediatamente las cajas para mantener la BIE completamente accesible y despejada en todo momento.","Se tapa la BIE con una cortina.","Se vacía la manguera en el pasillo."], ans:1, exp:"Los medios de protección contra incendios (extintores, BIE, pulsadores) nunca pueden estar obstaculizados ni ocultos." },
+  { b:"B2", tema:"Tema 7 · Correspondencia", q:"Cuando llega correspondencia oficial dirigida genéricamente al 'Excmo. Ayuntamiento de Huelva' (sin carácter confidencial personal), ¿a qué unidad debe trasladarse para su asiento formal?", opts:["Al archivo histórico directamente.","Al Registro General para su asiento de entrada, digitalización y distribución al departamento competente.","A la papelera de reciclaje.","A la casa particular del conserje."], ans:1, exp:"Toda comunicación o escrito dirigido al Ayuntamiento debe tener constancia en el Registro General conforme al art. 16 de la Ley 39/2015." },
+  { b:"B2", tema:"Tema 7 · Correspondencia", q:"¿Para qué sirve el 'Aviso de Recibo' (o Prueba de Entrega Electrónica - PEE) que acompaña a las notificaciones administrativas enviadas por Correos?", opts:["Para cobrar una propina al destinatario.","Para acreditar fehacientemente en el expediente administrativo la fecha, hora e identidad/firma de quien recibe la notificación (o el resultado de los intentos realizados).","Para franquear cartas ordinarias gratis.","Es un folleto publicitario de Correos."], ans:1, exp:"El acuse de recibo es el documento probatorio esencial para computar los plazos legales de los interesados en el procedimiento administrativo." },
+  { b:"B2", tema:"Tema 7 · Correspondencia", q:"¿Qué operación realiza una 'máquina franqueadora' en el área de correo de salida de una Administración?", opts:["Destruye los sobres antiguos.","Imprime o estampa directamente sobre el sobre o etiqueta adhesiva el sello de franqueo con el importe exacto, la fecha y el identificador del organismo.","Abre las cartas entrantes.","Escribe el contenido de las resoluciones."], ans:1, exp:"La máquina franqueadora agiliza el correo masivo estampando el franqueo homologado previo pesaje del envío." },
+  { b:"B2", tema:"Tema 7 · Correspondencia", q:"En el reparto interno de correspondencia y documentación entre distintos negociados de un edificio municipal, ¿cuál es la buena práctica para evitar extravíos?", opts:["Dejar los expedientes sueltos en el suelo de los pasillos.","Transportarlos en carpetas o bandejas clasificadas por departamentos y recabar firma o sello de recepción en el libro/hoja de reparto cuando se trate de documentos registrados o certificados.","Entregarlos a cualquier visitante que pase por el pasillo.","Mezclar la correspondencia de entrada con la de salida."], ans:1, exp:"La trazabilidad mediante hoja de reparto o recibí protege la custodia documental interna." },
+  { b:"B2", tema:"Tema 7 · Correspondencia", q:"Si en un paquete destinado a un almacén municipal figura el pictograma de una copa rota o la leyenda 'FRÁGIL / ESTE LADO HACIA ARRIBA', ¿cómo debe manipularse?", opts:["Apilando encima cajas pesadas de folios.","Colocándolo en la parte superior del carro de transporte, respetando su posición vertical y evitando golpes o vuelcos.","Volcándolo boca abajo para que ocupe menos.","Arrastrándolo por las escaleras."], ans:1, exp:"Respetar la simbología de manipulación evita roturas de material delicado o derrames." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"En la serie DIN A (norma ISO 216), si doblamos por la mitad el lado más largo de una hoja DIN A4 ($210 \\times 297\\text{ mm}$), ¿qué formato obtenemos?", opts:["DIN A3 ($297 \\times 420\\text{ mm}$).","DIN A5 ($148 \\times 210\\text{ mm}$).","DIN A0 ($841 \\times 1189\\text{ mm}$).","DIN B4."], ans:1, exp:"Cada paso numérico superior divide la superficie a la mitad: A3 > A4 > A5 (148 x 210 mm)." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"¿Cuál es la superficie exacta de un pliego base de formato DIN A0 ($841 \\times 1189\\text{ mm}$)?", opts:["0,5 metros cuadrados.","1 metro cuadrado ($1\\text{ m}^2$).","2 metros cuadrados.","10 metros cuadrados."], ans:1, exp:"Por definición de la norma ISO 216, el formato A0 tiene una superficie de 1 m² y una proporción entre lados de 1 : raíz de 2." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"Al configurar el escaneo de un documento administrativo de texto en un equipo multifunción para enviarlo por correo electrónico o adjuntarlo a un expediente electrónico (ENI), ¿qué resolución y formato son habituales?", opts:["1200 ppp en formato vídeo AVI.","200 o 300 ppp (puntos por pulgada) en formato PDF.","10 ppp en formato MP3.","6000 ppp en formato BMP sin compresión."], ans:1, exp:"La resolución estándar de digitalización documental en la Administración Pública (Esquema Nacional de Interoperabilidad) es de 200-300 ppp en formato PDF." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"En una fotocopiadora multifunción, ¿qué función cumple el 'Alimentador Automático de Documentos' (ADF o DADF)?", opts:["Grabar los documentos en un CD.","Cargar automáticamente un bloque de hojas originales sueltas para fotocopiarlas o escanearlas una tras otra (incluso a doble cara en una sola pasada) sin levantar la tapa manualmente.","Cortar el papel sobrante.","Llenar el depósito de agua."], ans:1, exp:"El ADF agiliza enormemente la copia y digitalización de expedientes de múltiples páginas." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"¿Qué precaución debe observarse con el tambor fotosensible (*drum*) de una impresora o fotocopiadora láser durante su mantenimiento básico?", opts:["Exponerlo al sol directo durante media hora.","No tocar nunca su superficie cilíndrica con los dedos ni exponerlo a luz intensa directa, ya que es sensible a la luz y la grasa de la piel daña la calidad de impresión.","Limpiarlo con lejía.","Lijarlo suavemente."], ans:1, exp:"El tambor fotosensible pierde sus propiedades electrostáticas si recibe luz directa prolongada o se raya/mancha." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"En el envío de un telefax, ¿qué es la 'carátula de transmisión' (portada de fax)?", opts:["La tapa de plástico del teléfono.","Una primera hoja resumen en la que se indican el remitente, destinatario, teléfono/fax de contacto, fecha, asunto y número total de páginas enviadas (incluida la carátula) para verificar que la recepción está completa.","El cable de alimentación.","El tóner del equipo."], ans:1, exp:"Indicar el número total de páginas en la carátula permite al receptor detectar de inmediato si faltó alguna hoja en la transmisión." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"¿Qué herramienta manual se utiliza para realizar dos o cuatro agujeros equidistantes en el margen izquierdo de los folios antes de archivarlos en carpetas de anillas o archivadores de palanca (AZ)?", opts:["La grapadora de tenaza.","La perforadora o taladradora de papel.","La plastificadora.","La cizalla."], ans:1, exp:"La perforadora de 2/4 taladros normalizados (separación estándar de 80 mm) prepara los documentos para archivadores AZ." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"Antes de introducir un lote de documentos descartados en una destructora de papel de oficina, ¿qué comprobación preventiva debe hacerse para evitar atascos o rotura de las cuchillas?", opts:["Mojar los folios con agua.","Retirar clips metálicos, encuadernadores o grapas gruesas (si el fabricante no indica que los admite) y no superar el número máximo de hojas simultáneas.","Doblar los folios en ocho capas gruesas.","Echar aceite de cocina en la ranura."], ans:1, exp:"Superar la capacidad de hojas o introducir elementos metálicos duros bloquea el motor o mella los rodillos de corte." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"Cuando se clasifican expedientes de ciudadanos ordenándolos por el primer apellido de la A a la Z, estamos aplicando un sistema de ordenación:", opts:["Numérica.","Alfabética (onomástica).","Cronológica.","Decimal."], ans:1, exp:"La clasificación por apellidos o nombres propios sigue el criterio alfabético." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"En el control de stock de material fungible de reprografía en conserjería, ¿cuándo debe solicitarse la reposición de tóner o cajas de papel?", opts:["Cuando se haya agotado hasta la última hoja y el servicio quede paralizado.","Al alcanzar el 'stock mínimo' o punto de pedido establecido, con antelación suficiente al agotamiento total.","Una vez cada diez años.","Nunca, los ciudadanos traen su propio papel."], ans:1, exp:"El control de stock mínimo garantiza la continuidad ininterrumpida del servicio administrativo." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"¿Qué grosor habitual en micras tienen las fundas de plastificar estándar utilizadas para proteger carteles informativos o acreditaciones en oficina?", opts:["5 micras.","Entre 80 y 125 micras por cara.","5.000 micras (5 mm).","10 centímetros."], ans:1, exp:"Las bolsas estándar de laminación en oficina oscilan entre 80 micras (flexibles) y 125 micras (mayor rigidez)." },
+  { b:"B2", tema:"Tema 8 · Reprografía y Oficina", q:"¿Qué diferencia principal existe entre una guillotina de palanca y una cizalla rotativa de rodillo para cortar papel?", opts:["La guillotina usa una cuchilla recta articulada en un extremo (mayor capacidad de hojas) y la cizalla rotativa utiliza una cuchilla circular deslizante sobre guía (mayor precisión y seguridad para pocas hojas).","La cizalla funciona con gasolina.","La guillotina solo corta madera.","Son exactamente la misma herramienta sin diferencias."], ans:0, exp:"La cizalla rotativa ofrece corte muy limpio y seguro en tiradas cortas; la guillotina de palanca permite cortar bloques más gruesos con pisón y protector." },
+
+  // BLOQUE 3: TEMAS 9 A 12 (38 preguntas)
+  { b:"B3", tema:"Tema 9 · Traslado y Reuniones", q:"Al utilizar una carretilla de mano (diablillo) para transportar varias cajas apiladas, ¿dónde deben colocarse las cajas más pesadas?", opts:["En la parte más alta de la pila.","En la parte inferior (base de la pala), quedando las más ligeras encima para mantener bajo el centro de gravedad.","Sobresaliendo hacia un solo lateral.","Colgadas del manillar."], ans:1, exp:"Colocar el mayor peso abajo estabiliza el centro de gravedad y evita el vuelco de la carga." },
+  { b:"B3", tema:"Tema 9 · Traslado y Reuniones", q:"¿Qué disposición de mobiliario en una sala de reuniones resulta más adecuada para fomentar el debate participativo y el contacto visual entre 15-20 asistentes y un moderador?", opts:["Disposición en 'U' o herradura.","Disposición en filas de teatro mirando a la pared.","Disposición de espaldas entre sí.","Sin sillas ni mesas."], ans:0, exp:"La forma en 'U' permite que todos los participantes se vean entre sí y mantengan contacto visual directo con la presidencia o pantalla." },
+  { b:"B3", tema:"Tema 9 · Traslado y Reuniones", q:"En un acto institucional en el Ayuntamiento de Huelva donde ondean tres banderas (España, Andalucía y Huelva) en el exterior o presidencia, según la Ley 39/1981 y el RD 2099/1983, ¿qué lugar ocupa la bandera de España?", opts:["El extremo derecho.","El lugar preeminente en el centro.","El extremo izquierdo.","Detrás de una cortina."], ans:1, exp:"Cuando el número de banderas es impar, la bandera de España ocupa siempre el lugar central de honor." },
+  { b:"B3", tema:"Tema 9 · Proyectores y Sonido", q:"Si al conectar un ordenador portátil a un proyector mediante un cable VGA antiguo se ve correctamente la imagen en la pantalla pero no se escucha el sonido del vídeo, ¿a qué se debe?", opts:["A que el proyector está estropeado.","A que el cable VGA transmite exclusivamente señal de vídeo analógico, por lo que es necesario conectar aparte un cable de audio (minijack 3,5 mm) al equipo de sonido o al proyector.","A que el ordenador tiene demasiado brillo.","A que falta papel en la impresora."], ans:1, exp:"VGA no transporta audio; requiere conexión de audio independiente (o sustituir por HDMI)." },
+  { b:"B3", tema:"Tema 9 · Proyectores y Sonido", q:"En un salón de actos con megafonía, ¿qué tipo de micrófono resulta más adecuado para una mesa presidencial o atril porque capta el sonido principalmente por delante y rechaza el ruido ambiental trasero reduciendo el acople?", opts:["Un micrófono omnidireccional colocado pegado al altavoz.","Un micrófono unidireccional / cardioide (de cuello de cisne o de mano).","Un altavoz invertido.","Un cable RCA suelto."], ans:1, exp:"El patrón polar cardioide concentra la captación en el eje frontal del orador y atenúa el sonido procedente de los altavoces." },
+  { b:"B3", tema:"Tema 9 · Proyectores y Sonido", q:"¿Para qué sirve el control de 'Ganancia' (*Gain*) situado en la parte superior de cada canal de una mesa de mezclas de sonido?", opts:["Para encender las luces de la sala.","Para ajustar la sensibilidad o nivel de entrada de la señal del micrófono o instrumento antes de pasar por la ecualización y el fader de volumen.","Para apagar el proyector.","Para cambiar el idioma de la megafonía."], ans:1, exp:"La ganancia adapta la señal débil de un micrófono al nivel óptimo de trabajo interno de la mesa sin distorsión." },
+  { b:"B3", tema:"Tema 9 · Proyectores y Sonido", q:"¿Por qué en instalaciones de megafonía de edificios públicos con muchos altavoces repartidos en pasillos y plantas se utilizan líneas de '100 V' (alta impedancia)?", opts:["Para electrocutar a los intrusos.","Porque al elevar la tensión se reduce la corriente, evitando pérdidas de potencia en tiradas largas de cable y permitiendo conectar múltiples altavoces en paralelo.","Porque solo funcionan con pilas de reloj.","Porque no necesitan amplificador."], ans:1, exp:"Las líneas de 100 V con transformador de línea permiten cubrir grandes distancias sin caídas apreciables de señal." },
+  { b:"B3", tema:"Tema 9 · Proyectores y Sonido", q:"Si durante una rueda de prensa empieza a producirse un acople acústico (pitido agudo) en un micrófono de mesa, ¿cuál es la actuación más rápida en la mesa de mezclas?", opts:["Subir el volumen general (Master) al máximo.","Bajar ligeramente el fader/ganancia del canal afectado (o mutear los micrófonos que no se estén utilizando en ese momento) y reducir frecuencias agudas/medias.","Apagar las luces del salón.","Desenchufar todos los ordenadores."], ans:1, exp:"Reducir la ganancia del canal abierto o silenciar micrófonos inactivos rompe inmediatamente el bucle de realimentación acústica." },
+  { b:"B3", tema:"Tema 9 · Proyectores y Sonido", q:"¿Qué cable y conector de audio se utiliza habitualmente para conectar la salida de auriculares de un ordenador portátil o teléfono móvil a una entrada auxiliar de sonido?", opts:["Minijack estéreo de 3,5 mm.","Conector VGA de 15 pines.","Cable coaxial RG-6.","Conector trifásico cetac."], ans:0, exp:"El conector TRS minijack de 3,5 mm es el estándar para salida de audio analógico en ordenadores y dispositivos móviles." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"Antes de sustituir un tubo fluorescente o luminaria LED o manipular un portalámparas en una dependencia municipal, ¿cuál es la medida de seguridad previa obligatoria?", opts:["Hacerlo con el interruptor encendido para ver mejor.","Cortar la corriente en el interruptor de pared y desconectar el PIA correspondiente en el cuadro eléctrico, dejando enfriar la lámpara.","Subirse a una silla giratoria con ruedas.","Tocar los contactos metálicos con un destornillador sin aislar."], ans:1, exp:"Desconectar la alimentación en el cuadro y esperar el enfriamiento evita descargas eléctricas y quemaduras." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"Si en una oficina se produce un cortocircuito al enchufar una estufa defectuosa, ¿qué dispositivo del cuadro eléctrico disparará de forma instantánea para proteger la línea?", opts:["El PIA (interruptor magnetotérmico) de ese circuito (y eventualmente el IGA).","La llave de paso del agua.","El termostato de la caldera.","El reloj programador del riego."], ans:0, exp:"El disparo magnético del PIA actúa instantáneamente ante intensidades muy elevadas propias de un cortocircuito." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"En fontanería básica, si un grifo tradicional de volante (de rosca, no monomando) gotea continuamente cuando está cerrado, ¿qué pieza suele estar desgastada y debe sustituirse?", opts:["La boya de la cisterna.","La zapata o junta de goma del vástago de cierre (previo cierre de la llave de paso).","El tubo de desagüe del techo.","El radiador del pasillo."], ans:1, exp:"En los grifos de montura clásica, el deterioro de la zapata de goma impide el cierre estanco sobre el asiento." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"Cuando se desmonta el vaso inferior de un sifón de lavabo para limpiarlo tras un atasco leve, ¿qué precaución debe tomarse al volver a roscarlo?", opts:["Tirar la junta tórica de goma a la basura.","Comprobar que la junta de estanqueidad de goma está limpia y bien asentada en su ranura, apretando a mano con firmeza sin forzar con llaves metálicas para no partir el plástico.","Rellenarlo de cemento.","Dejarlo medio desenroscado."], ans:1, exp:"Las juntas tóricas bien colocadas y el apriete manual firme aseguran estanqueidad sin fisurar la rosca de PVC/polipropileno." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"¿Por qué debe evitarse verter desatascadores químicos ácidos o cáusticos fuertes en los desagües de lavabos y fregaderos municipales?", opts:["Porque perfumán demasiado el baño.","Porque pueden deformar o perforar tuberías de PVC/plomo, provocar reacciones exotérmicas violentas con salpicaduras y generar vapores tóxicos peligrosos para el personal de mantenimiento.","Porque congelan el agua.","Porque aumentan la presión de la red potable."], ans:1, exp:"Los desatascadores químicos agresivos entrañan graves riesgos de quemaduras químicas y dañan las instalaciones de saneamiento." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"En carpintería y cerrajería básica, si la manilla de una puerta gira loca sin accionar el picaporte/resbalón, ¿qué avería sencilla suele ser la causa más frecuente?", opts:["Se ha roto el tejado del edificio.","Se ha aflojado el tornillo prisionero (Allen) que fija la manilla al cuadradillo metálico o se ha salido dicho cuadradillo.","Falta gas en la caldera.","Ha saltado el diferencial."], ans:1, exp:"Apretar el tornillo prisionero sobre el cuadradillo restituye inmediatamente la transmisión mecánica de la manilla." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"Para lubricar el mecanismo interno de un bombín (cilindro) de cerradura que va duro al girar la llave, ¿qué lubricante es el más recomendable?", opts:["Grasa consistente espesa o aceite de cocina.","Lubricante seco de grafito en polvo o spray lubricante específico con PTFE/silicona (evitando aceites espesos que acumulan polvo y atascan los pitones).","Pegamento líquido.","Agua jabonosa."], ans:1, exp:"El grafito o los lubricantes secos no apelmazan el polvo ni bloquean los pequeños muelles y pitones internos del cilindro." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"Antes de aplicar masilla o aguaplast para reparar un pequeño desconchón en una pared de yeso antes de pintarla, ¿qué preparación previa debe hacerse?", opts:["Pintar primero encima con esmalte brillante.","Limpiar el polvo y retirar las partes sueltas o desconchadas con una espátula (y humedecer ligeramente el fondo) para que la masilla adhiera correctamente.","Cubrir el agujero con papel de periódico.","Aplicar silicona aceitosa."], ans:1, exp:"Una superficie limpia y libre de polvo suelto garantiza el agarre mecánico de la pasta de relleno." },
+  { b:"B3", tema:"Tema 10 · Mantenimiento Básico", q:"¿Cuál es la diferencia fundamental entre la silicona neutra y la silicona acética en trabajos de sellado?", opts:["La silicona acética desprende olor a vinagre al curar y puede corroer metales o espejos, mientras que la silicona neutra no es corrosiva y es apta para todo tipo de materiales (metales, PVC, sanitarios, obra).","La silicona neutra nunca seca.","La silicona acética es de color azul fluorescente.","No existe ninguna diferencia."], ans:0, exp:"La silicona neutra es más versátil y evita oxidaciones en perfilerías metálicas y láminas de espejo." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"Según el artículo 21 de la Ley 31/1995 de Prevención de Riesgos Laborales, cuando los trabajadores estén o puedan estar expuestos a un riesgo grave e inminente con ocasión de su trabajo, el trabajador tendrá derecho a:", opts:["Continuar trabajando sin decir nada hasta terminar su turno.","Interrumpir su actividad y abandonar el lugar de trabajo, en caso necesario, cuando considere que dicha actividad entraña un riesgo grave e inminente para su vida o su salud.","Recibir una multa económica.","Ser despedido inmediatamente."], ans:1, exp:"Art. 21.2 LPRL reconoce el derecho del trabajador a interrumpir su actividad y abandonar el lugar de trabajo ante riesgo grave e inminente." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"En el transporte manual de cargas (RD 487/1997), ¿qué movimiento está especialmente desaconsejado porque multiplica la presión sobre los discos intervertebrales?", opts:["Flexionar las rodillas.","Girar el tronco mientras se sostiene una carga pesada en lugar de girar moviendo los pies.","Pegar la carga al pecho.","Pedir ayuda a un compañero."], ans:1, exp:"La torsión del tronco bajo carga es una de las principales causas de lumbalgia aguda y hernia discal." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"Al subir o bajar por una escalera de mano para una tarea ligera de mantenimiento, ¿cómo debe realizarse el ascenso y descenso?", opts:["De espaldas a la escalera para ver mejor la sala.","Siempre de frente a la escalera, agarrándose a los peldaños o largueros con ambas manos (manteniendo tres puntos de contacto) y sin llevar objetos pesados en las manos.","Saltando de dos en dos peldaños.","Con zapatillas sueltas o chanclas."], ans:1, exp:"Subir y bajar de frente con tres puntos de contacto y calzado antideslizante cerrado es norma esencial del RD 2177/2004." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"En relación con el riesgo eléctrico (RD 614/2001), ¿cómo influye la humedad (manos mojadas o suelo húmedo) en el cuerpo humano?", opts:["Aumenta la resistencia eléctrica protegiendo a la persona.","Disminuye drásticamente la resistencia eléctrica de la piel, aumentando la intensidad de corriente que atraviesa el cuerpo y agravando el riesgo de electrocución.","Anula por completo el voltaje.","No tiene ninguna influencia."], ans:1, exp:"Por la Ley de Ohm ($I = V/R$), al caer la resistencia de la piel mojada, la intensidad de choque eléctrico aumenta peligrosamente." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"¿Cuál es el orden correcto de las '5 Reglas de Oro' para trabajos sin tensión eléctrica?", opts:["1. Señalizar, 2. Cortar, 3. Medir, 4. Bloquear, 5. Poner a tierra.","1. Desconectar, 2. Prevenir cualquier posible realimentación, 3. Verificar la ausencia de tensión, 4. Poner a tierra y en cortocircuito, 5. Proteger frente a elementos próximos en tensión y señalizar.","1. Poner a tierra, 2. Desconectar, 3. Verificar, 4. Señalizar, 5. Bloquear.","1. Verificar tensión, 2. Cortar, 3. Señalizar, 4. Bloquear, 5. Poner a tierra."], ans:1, exp:"El RD 614/2001 establece este orden estricto e inalterable para garantizar zona protegida sin tensión." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"Según la norma UNE-EN 2 sobre clases de fuego, ¿a qué clase corresponden los fuegos de gases inflamables como el butano, propano o gas natural?", opts:["Clase A.","Clase B.","Clase C.","Clase F."], ans:2, exp:"Clase A: sólidos; Clase B: líquidos; Clase C: gases inflamables; Clase D: metales; Clase F: aceites de cocina." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"¿Por qué está terminantemente prohibido utilizar agua a chorro para apagar un incendio en un cuadro eléctrico en tensión?", opts:["Porque oxida los tornillos.","Porque el agua conduce la electricidad y provocaría la electrocución inmediata de quien maneja la manguera o extintor.","Porque apaga el fuego demasiado rápido.","Porque mancha el suelo."], ans:1, exp:"El agua es conductora de la electricidad; en fuegos eléctricos se emplea CO2 o polvo polivalente ABC (homologado hasta 1000 V)." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"Durante la evacuación de un edificio municipal por incendio, si hay humo denso en un pasillo, ¿cómo deben desplazarse los evacuados?", opts:["Corriendo erguidos lo más rápido posible.","Agachados o a ras de suelo, donde el aire es más fresco, limpio y tiene mayor visibilidad, cubriendo nariz y boca si es posible.","Subiendo hacia la azotea si la salida está abajo.","Utilizando el ascensor principal."], ans:1, exp:"El humo y los gases tóxicos calientes ascienden hacia el techo, quedando la capa más respirable cerca del suelo." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"Al abandonar las dependencias durante una evacuación por incendio tras comprobar que no queda nadie dentro, ¿cómo deben dejarse las puertas interiores?", opts:["Abiertas de par en par con cuñas.","Cerradas (pero SIN echar la llave) para retrasar la propagación del fuego y el humo sin impedir el acceso a los bomberos.","Cerradas con doble vuelta de llave.","Arrancadas de sus bisagras."], ans:1, exp:"Cerrar las puertas confina el humo y el calor, mientras que dejarlas sin llave permite la revisión y actuación de los equipos de rescate." },
+  { b:"B3", tema:"Tema 11 · PRL y Emergencias", q:"En el Plan de Autoprotección (RD 393/2007), una vez evacuado el edificio, ¿dónde deben concentrarse todos los trabajadores y visitantes para realizar el recuento y verificar que no falta nadie?", opts:["En sus coches particulares.","En el Punto de Reunión exterior previamente establecido y señalizado, a distancia segura del edificio.","En el vestíbulo de entrada del edificio incendiado.","En la sala de calderas."], ans:1, exp:"El Punto de Reunión exterior permite controlar al personal evacuado y comunicar inmediatamente a los bomberos si alguien pudiera haber quedado atrapado." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"En la organización de los Municipios de Gran Población (Título X de la Ley 7/1985 LBRL), régimen aplicable al Ayuntamiento de Huelva, ¿quién nombra y separa libremente a los Tenientes de Alcalde?", opts:["El Presidente de la Junta de Andalucía.","El Alcalde o Alcaldesa, entre los miembros de la Junta de Gobierno Local.","El Subdelegado del Gobierno.","El Interventor General."], ans:1, exp:"Art. 125 LBRL: El Alcalde podrá nombrar entre los concejales que formen parte de la Junta de Gobierno Local a los Tenientes de Alcalde." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿Cuál es la función principal de los Tenientes de Alcalde en el Ayuntamiento de Huelva?", opts:["Sustituir, por el orden de su nombramiento, al Alcalde en los casos de vacante, ausencia o enfermedad.","Dirigir la Policía Nacional de toda Andalucía.","Aprobar las leyes orgánicas del Estado.","Recaudar el IVA estatal."], ans:0, exp:"Art. 125 LBRL: Los Tenientes de Alcalde sustituyen al Alcalde por orden de nombramiento en vacante, ausencia o enfermedad." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿Cuál de los siguientes órganos directivos municipales del Ayuntamiento de Huelva tiene atribuida la función de fe pública y asesoramiento legal preceptivo del Pleno y de las Comisiones?", opts:["El Secretario General del Pleno.","El Director de Deportes.","El Jefe de Taller de Vehículos.","El Gerente de EMTUSA."], ans:0, exp:"Art. 122.5 LBRL: El Secretario General del Pleno ejerce la fe pública y el asesoramiento legal preceptivo del Pleno y sus comisiones." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿En qué céntrico espacio de Huelva capital se ubica el Palacio de Congresos y Auditorio 'Casa Colón'?", opts:["En la Plaza del Punto, s/n.","En el Polígono Industrial Tartessos.","En Punta Umbría.","En el Muelle del Tinto."], ans:0, exp:"La Casa Colón, emblemático espacio cultural y de congresos municipal, se encuentra en la Plaza del Punto de Huelva." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿Cuáles son los dos Mercados Municipales de Abastos tradicionales gestionados en Huelva capital?", opts:["Mercado de Triana y Mercado de la Boquería.","Mercado del Carmen y Mercado de San Sebastián.","Mercado Central de Sevilla y Mercado de Cádiz.","Mercado del Portil y Mercado de Ayamonte."], ans:1, exp:"Los dos mercados municipales de abastos de Huelva capital son el Mercado del Carmen y el Mercado de San Sebastián." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿Cuál es el nombre del Cementerio Municipal titularidad del Ayuntamiento de Huelva?", opts:["Cementerio de San Fernando.","Cementerio Municipal de la Soledad.","Cementerio de la Almudena.","Cementerio de San José."], ans:1, exp:"El cementerio municipal de Huelva capital es el Cementerio de la Soledad." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿Qué sociedad municipal del Ayuntamiento de Huelva se dedica a la comunicación audiovisual y emisión de televisión local?", opts:["EMTUSA.","Huelva Televisión (Huelva TV).","Aguas de Huelva.","Canal Sur."], ans:1, exp:"Huelva Televisión es la sociedad mercantil municipal encargada de la televisión pública local." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿Qué empresa instrumental del Ayuntamiento de Huelva tiene por objeto la promoción y gestión de vivienda protegida y patrimonio municipal de suelo?", opts:["EMVISMAN (Empresa Municipal de la Vivienda y Suelo).","EMTUSA.","Huelva Deporte, S.L.","Autoridad Portuaria."], ans:0, exp:"EMVISMAN es la sociedad municipal vinculada a vivienda y suelo del Ayuntamiento de Huelva." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿En qué calle del centro de Huelva capital se encuentra situado el Gran Teatro de Huelva?", opts:["Calle Vázquez López.","Avenida Federico Molina.","Calle Galaroza.","Avenida de Andalucía."], ans:0, exp:"El Gran Teatro de Huelva está ubicado en la calle Vázquez López." },
+  { b:"B3", tema:"Tema 12 · Ayto. de Huelva", q:"¿Qué Área de Gobierno municipal del Ayuntamiento de Huelva tramita directamente las convocatorias de selección de personal (OEP) y gestiona el personal de conserjería y mantenimiento de edificios municipales?", opts:["Concejalía Delegada de Régimen Interior, Recursos Humanos y Modernización Digital.","Concejalía de Turismo y Comercio.","Patronato de la Alhambra.","Delegación de Agricultura y Pesca."], ans:0, exp:"Como figura en el encabezamiento oficial de las bases del BOP (24/11/2026), la competencia corresponde a la Concejalía Delegada de Régimen Interior, Recursos Humanos y Modernización Digital." }
+];
+
+let questions = [];
+let userAnswers = {};
+let isGraded = false;
+let timeLeft = 60 * 60;
+let timerInterval = null;
+
+function shuffle(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (isGraded) return;
+    timeLeft--;
+    if (timeLeft <= 0) {
+      timeLeft = 0;
+      updateTimerDisplay();
+      gradeQuiz(true);
+      return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+  const s = (timeLeft % 60).toString().padStart(2, '0');
+  const el = document.getElementById('timer');
+  el.textContent = `${m}:${s}`;
+  if (timeLeft <= 300) el.classList.add('timer-warn');
+  else el.classList.remove('timer-warn');
+}
+
+function renderQuiz() {
+  const form = document.getElementById('quizForm');
+  form.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  questions.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `q-card-${idx}`;
+    card.dataset.block = item.b;
+    card.innerHTML = `
+      <div class="q-header">
+        <span>Pregunta ${idx + 1} de ${questions.length}</span>
+        <span class="q-tema">${item.tema}</span>
+      </div>
+      <div class="q-text">${item.q}</div>
+      <div class="options" id="opts-${idx}">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="option" id="lbl-${idx}-${oIdx}" onclick="selectOption(${idx}, ${oIdx})">
+            <input type="radio" name="q${idx}" value="${oIdx}">
+            <span><strong>${letters[oIdx]})</strong> ${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp-${idx}">
+        <strong>Explicación:</strong> ${item.exp}
+      </div>
+    `;
+    form.appendChild(card);
+  });
+  updateAnsweredCount();
+}
+
+function selectOption(qIdx, oIdx) {
+  if (isGraded) return;
+  userAnswers[qIdx] = oIdx;
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach((el, i) => {
+    el.classList.toggle('selected', i === oIdx);
+    el.querySelector('input').checked = (i === oIdx);
+  });
+  updateAnsweredCount();
+}
+
+function updateAnsweredCount() {
+  const count = Object.keys(userAnswers).length;
+  document.getElementById('answeredCount').textContent = `Respondidas: ${count} / ${questions.length}`;
+}
+
+function gradeQuiz(auto = false) {
+  if (isGraded) return;
+  if (!auto) {
+    const unanswered = questions.length - Object.keys(userAnswers).length;
+    if (unanswered > 0 && !confirm(`Tienes ${unanswered} preguntas en blanco. ¿Deseas finalizar y corregir el simulacro?`)) {
+      return;
+    }
+  }
+  isGraded = true;
+  clearInterval(timerInterval);
+
+  let ok = 0, ko = 0, blank = 0;
+  questions.forEach((item, idx) => {
+    const chosen = userAnswers[idx];
+    const card = document.getElementById(`q-card-${idx}`);
+    const correctLbl = document.getElementById(`lbl-${idx}-${item.ans}`);
+    correctLbl.classList.add('correct');
+
+    if (chosen === undefined) {
+      blank++;
+      card.dataset.status = 'wrong';
+    } else if (chosen === item.ans) {
+      ok++;
+      card.dataset.status = 'ok';
+    } else {
+      ko++;
+      card.dataset.status = 'wrong';
+      document.getElementById(`lbl-${idx}-${chosen}`).classList.add('wrong');
+    }
+    document.getElementById(`exp-${idx}`).classList.add('show');
+    card.querySelectorAll('input').forEach(inp => inp.disabled = true);
+  });
+
+  const netHits = ok - (ko / 4);
+  const rawScore = (ok * 0.10) - (ko * 0.025);
+  const finalScore = Math.max(0, rawScore);
+
+  document.getElementById('finalScore').textContent = finalScore.toFixed(3).replace('.', ',');
+  document.getElementById('statOk').textContent = ok;
+  document.getElementById('statKo').textContent = ko;
+  document.getElementById('statBlank').textContent = blank;
+  document.getElementById('statNet').textContent = netHits.toFixed(2).replace('.', ',');
+
+  const banner = document.getElementById('statusBanner');
+  if (finalScore >= 5.0) {
+    banner.className = 'status-banner apto';
+    banner.textContent = `APTO EN EJERCICIO TEÓRICO (${finalScore.toFixed(3).replace('.', ',')} / 10) — Superas el corte de 5,00 puntos`;
+  } else {
+    banner.className = 'status-banner no-apto';
+    banner.textContent = `NO APTO (${finalScore.toFixed(3).replace('.', ',')} / 10) — Se requiere un mínimo de 5,00 puntos`;
+  }
+
+  document.getElementById('resultsPanel').classList.add('show');
+  document.getElementById('filterBar').classList.add('show');
+  document.getElementById('bottomActions').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterQuestions(mode) {
+  questions.forEach((_, idx) => {
+    const card = document.getElementById(`q-card-${idx}`);
+    if (mode === 'all') card.style.display = 'block';
+    else if (mode === 'wrong') card.style.display = (card.dataset.status === 'wrong') ? 'block' : 'none';
+    else card.style.display = (card.dataset.block === mode) ? 'block' : 'none';
+  });
+}
+
+function resetQuiz(doShuffle) {
+  isGraded = false;
+  userAnswers = {};
+  timeLeft = 60 * 60;
+  questions = doShuffle ? shuffle(QUESTIONS_DATA) : [...QUESTIONS_DATA];
+  document.getElementById('resultsPanel').classList.remove('show');
+  document.getElementById('filterBar').classList.remove('show');
+  document.getElementById('bottomActions').style.display = 'flex';
+  updateTimerDisplay();
+  renderQuiz();
+  startTimer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+questions = [...QUESTIONS_DATA];
+renderQuiz();
+startTimer();
+</script>
+</body>
+</html>
