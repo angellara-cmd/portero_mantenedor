@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi historial — Portero/a-Mantenedor/a Ayto. Huelva</title>
+<style>
+  :root { --bg:#f1f5f9; --surface:#fff; --surface-alt:#f8fafc; --text:#0f172a; --muted:#475569; --border:#e2e8f0; --primary:#004b87; --accent:#0284c7; --ok:#15803d; --warn:#b45309; --bad:#b91c1c; --shadow:0 8px 25px -5px rgba(15,23,42,.08); }
+  [data-theme="dark"] { --bg:#0b1120; --surface:#111827; --surface-alt:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --border:#334155; --primary:#38bdf8; --accent:#7dd3fc; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171; --shadow:0 8px 25px -5px rgba(0,0,0,.45); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+  .topbar { position:sticky; top:0; height:62px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 1.25rem; z-index:100; }
+  .nav-left { display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+  .btn-nav, .btn { text-decoration:none; background:var(--surface-alt); border:1px solid var(--border); color:var(--text); padding:.42rem .8rem; border-radius:8px; font-size:.84rem; font-weight:600; cursor:pointer; font-family:inherit; }
+  .btn-nav:hover, .btn:hover { border-color:var(--accent); color:var(--primary); }
+  .btn.danger:hover { border-color:var(--bad); color:var(--bad); }
+  .page-header { background:linear-gradient(135deg,#003366 0%,#004b87 55%,#0284c7 100%); color:#fff; padding:2.2rem 1.25rem 3.2rem; text-align:center; }
+  .page-header h1 { font-size:1.75rem; font-weight:800; margin-bottom:.4rem; }
+  .page-header p { opacity:.92; max-width:640px; margin:0 auto; font-size:.95rem; }
+  .container { max-width:900px; margin:-1.75rem auto 3rem; padding:0 1.25rem; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.2rem 1.35rem; margin-bottom:1.25rem; box-shadow:var(--shadow); }
+  .card h2 { font-size:1.1rem; color:var(--primary); margin-bottom:.7rem; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.8rem; }
+  .stat { background:var(--surface-alt); border:1px solid var(--border); border-radius:10px; padding:.7rem; text-align:center; }
+  .stat strong { display:block; font-size:1.5rem; color:var(--primary); }
+  .stat span { font-size:.74rem; color:var(--muted); text-transform:uppercase; font-weight:600; }
+  select { padding:.45rem .6rem; border:1px solid var(--border); border-radius:8px; background:var(--surface-alt); color:var(--text); font:inherit; }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  th, td { border-bottom:1px solid var(--border); padding:.45rem .5rem; text-align:left; }
+  th { color:var(--muted); font-size:.75rem; text-transform:uppercase; }
+  .ok { color:var(--ok); font-weight:700; } .bad { color:var(--bad); font-weight:700; }
+  .scroll { overflow-x:auto; }
+  .bar-row { display:grid; grid-template-columns:70px 1fr 90px; gap:.6rem; align-items:center; margin:.35rem 0; font-size:.88rem; }
+  .bar { background:var(--surface-alt); border:1px solid var(--border); border-radius:999px; height:14px; overflow:hidden; }
+  .bar > i { display:block; height:100%; }
+  .empty { text-align:center; color:var(--muted); padding:1.2rem .5rem; }
+  .tools { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+  .hint { font-size:.82rem; color:var(--muted); margin-top:.6rem; }
+  svg text { fill:var(--muted); font-size:11px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="nav-left">
+    <a href="index.html" class="btn-nav">&larr; Inicio</a>
+    <a href="test.html" class="btn-nav">📝 Ejercicios</a>
+    <a href="Calculadora_Portero_Huelva.html" class="btn-nav">🧮 Calculadora</a>
+    <a href="Test_Personalizado_Portero_Huelva.html" class="btn-nav">⚙️ Personalizado</a>
+  </div>
+  <button class="btn-nav" id="themeBtn" onclick="toggleTheme()">🌙 Oscuro</button>
+</header>
+<section class="page-header">
+  <h1>Mi historial</h1>
+  <p>Resultados de tus simulacros y tests, tu evolución y los temas que peor llevas. Los datos se guardan solo en este navegador.</p>
+</section>
+<main class="container">
+  <section class="card">
+    <div class="tools"><label for="filtro"><strong>Mostrar:</strong></label><select id="filtro" onchange="pintar()"></select></div>
+    <div class="stats" id="resumen" style="margin-top:.9rem"></div>
+  </section>
+  <section class="card"><h2>Evolución de la nota (sobre 10)</h2><div id="grafica"></div><p class="hint">La línea discontinua marca el 5,00 de corte.</p></section>
+  <section class="card"><h2>Acierto por tema</h2><div id="temas"></div><p class="hint">Porcentaje de aciertos sobre todas las preguntas de cada tema que has contestado en los intentos mostrados.</p></section>
+  <section class="card"><h2>Preguntas que más fallas</h2><div id="falladas"></div></section>
+  <section class="card"><h2>Intentos</h2><div class="scroll" id="tabla"></div></section>
+  <section class="card">
+    <h2>Copia de seguridad</h2>
+    <div class="tools">
+      <button class="btn" onclick="exportar()">⬇ Exportar historial</button>
+      <label class="btn" for="imp">⬆ Importar</label><input type="file" id="imp" accept="application/json" style="display:none" onchange="importar(this)">
+      <button class="btn danger" onclick="borrar()">🗑 Borrar historial</button>
+    </div>
+    <p class="hint">Exporta tu historial de vez en cuando: si borras los datos del navegador o cambias de dispositivo, puedes importarlo de nuevo.</p>
+  </section>
+</main>
+<script src="historial.js"></script>
+<script>
+  function toggleTheme() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = dark ? '🌙 Oscuro' : '☀️ Claro';
+    try { localStorage.setItem('huelva_pm_theme', dark ? 'light' : 'dark'); } catch (e) {}
+  }
+  try { if (localStorage.getItem('huelva_pm_theme') === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️ Claro'; } } catch (e) {}
+
+  function $(id) { return document.getElementById(id); }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmt(n) { return (Math.round(n * 100) / 100).toFixed(2).replace('.', ','); }
+  function nota10(a) { return a.nota; }
+  function mmss(s) { s = s || 0; return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+  function datos() {
+    var h = HistorialPM.leer(), f = $('filtro').value;
+    return f === '*' ? h : h.filter(function (a) { return a.tipo === f; });
+  }
+  function opciones() {
+    var h = HistorialPM.leer(), sel = $('filtro'), cur = sel.value || '*', t = [];
+    h.forEach(function (a) { if (t.indexOf(a.tipo) < 0) t.push(a.tipo); });
+    sel.innerHTML = '<option value="*">Todos los intentos</option>' + t.map(function (x) { return '<option value="' + esc(x) + '">' + esc(x) + '</option>'; }).join('');
+    sel.value = t.indexOf(cur) >= 0 ? cur : '*';
+  }
+
+  function pintar() {
+    var d = datos(), n = d.length;
+    if (!n) {
+      $('resumen').innerHTML = '<div class="empty" style="grid-column:1/-1">Aún no hay intentos. Haz un simulacro o un test y vuelve aquí.</div>';
+      $('grafica').innerHTML = $('temas').innerHTML = $('falladas').innerHTML = $('tabla').innerHTML = '<div class="empty">Sin datos todavía.</div>';
+      return;
+    }
+    var notas = d.map(nota10), mejor = Math.max.apply(null, notas);
+    var ult = notas.slice(-5), media = ult.reduce(function (a, b) { return a + b; }, 0) / ult.length;
+    var aprobados = notas.filter(function (x) { return x >= 5; }).length;
+    var tend = n >= 2 ? notas[n - 1] - notas[n - 2] : 0;
+    $('resumen').innerHTML =
+      '<div class="stat"><strong>' + n + '</strong><span>Intentos</span></div>' +
+      '<div class="stat"><strong>' + fmt(mejor) + '</strong><span>Mejor nota</span></div>' +
+      '<div class="stat"><strong>' + fmt(media) + '</strong><span>Media últimos ' + ult.length + '</span></div>' +
+      '<div class="stat"><strong>' + aprobados + '/' + n + '</strong><span>Con 5 o más</span></div>' +
+      '<div class="stat"><strong>' + (tend > 0 ? '▲ ' : tend < 0 ? '▼ ' : '= ') + fmt(Math.abs(tend)) + '</strong><span>Vs. intento anterior</span></div>';
+
+    // Gráfica SVG
+    var W = 700, H = 220, L = 34, R = 10, T = 10, B = 24, pw = W - L - R, ph = H - T - B;
+    function X(i) { return L + (n === 1 ? pw / 2 : i * pw / (n - 1)); }
+    function Y(v) { return T + ph - Math.max(0, Math.min(10, v)) / 10 * ph; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="Evolución de la nota">';
+    [0, 2.5, 5, 7.5, 10].forEach(function (v) { s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="var(--border)"/><text x="4" y="' + (Y(v) + 4) + '">' + v + '</text>'; });
+    s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(5) + '" y2="' + Y(5) + '" stroke="var(--bad)" stroke-dasharray="5 4"/>';
+    s += '<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="' + notas.map(function (v, i) { return X(i) + ',' + Y(v); }).join(' ') + '"/>';
+    notas.forEach(function (v, i) { s += '<circle cx="' + X(i) + '" cy="' + Y(v) + '" r="4" fill="' + (v >= 5 ? 'var(--ok)' : 'var(--bad)') + '"><title>' + esc(d[i].tipo) + ': ' + fmt(v) + '</title></circle>'; });
+    $('grafica').innerHTML = s + '</svg>';
+
+    // Por tema
+    var por = {};
+    d.forEach(function (a) { Object.keys(a.por || {}).forEach(function (k) { var o = por[k] || (por[k] = { o: 0, f: 0, b: 0 }); o.o += a.por[k].o; o.f += a.por[k].f; o.b += a.por[k].b; }); });
+    var html = '', ks = Object.keys(por).map(Number).filter(function (k) { return k > 0; }).sort(function (a, b) { return a - b; });
+    ks.forEach(function (k) {
+      var o = por[k], t = o.o + o.f + o.b, p = t ? Math.round(100 * o.o / t) : 0, c = p >= 70 ? 'var(--ok)' : p >= 50 ? 'var(--warn)' : 'var(--bad)';
+      html += '<div class="bar-row"><span>Tema ' + k + '</span><div class="bar"><i style="width:' + p + '%;background:' + c + '"></i></div><span>' + p + ' % <small>(' + o.o + '/' + t + ')</small></span></div>';
+    });
+    $('temas').innerHTML = html || '<div class="empty">Sin datos por tema.</div>';
+
+    // Falladas
+    var cnt = {}; d.forEach(function (a) { (a.fails || []).forEach(function (q) { cnt[q] = (cnt[q] || 0) + 1; }); });
+    var top = Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).slice(0, 12);
+    $('falladas').innerHTML = top.length ? '<ol style="padding-left:1.2rem">' + top.map(function (q) { return '<li style="margin:.3rem 0">' + esc(q) + ' <strong>(' + cnt[q] + (cnt[q] === 1 ? ' vez' : ' veces') + ')</strong></li>'; }).join('') + '</ol>' : '<div class="empty">Sin fallos registrados.</div>';
+
+    // Tabla
+    $('tabla').innerHTML = '<table><tr><th>Fecha</th><th>Prueba</th><th>Nota</th><th>Ac.</th><th>Err.</th><th>Blanco</th><th>Tiempo</th><th></th></tr>' +
+      d.slice().reverse().map(function (a) {
+        var f = new Date(a.fecha), fs = f.toLocaleDateString('es-ES') + ' ' + f.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        return '<tr><td>' + fs + '</td><td>' + esc(a.tipo) + '</td><td class="' + (a.nota >= 5 ? 'ok' : 'bad') + '">' + fmt(a.nota) + '</td><td>' + a.ok + '</td><td>' + a.fail + '</td><td>' + a.blank + '</td><td>' + mmss(a.seg) + '</td><td><button class="btn" onclick="quitar(' + a.id + ')" aria-label="Eliminar intento">✕</button></td></tr>';
+      }).join('') + '</table>';
+  }
+
+  function quitar(id) { if (!confirm('¿Eliminar este intento del historial?')) return; HistorialPM.escribir(HistorialPM.leer().filter(function (a) { return a.id !== id; })); opciones(); pintar(); }
+  function borrar() { if (!confirm('Se borrará TODO el historial de este navegador. ¿Continuar?')) return; HistorialPM.escribir([]); opciones(); pintar(); }
+  function exportar() {
+    var blob = new Blob([JSON.stringify(HistorialPM.leer(), null, 1)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'historial_portero_huelva.json'; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function importar(inp) {
+    var f = inp.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var nuevo = JSON.parse(r.result); if (!Array.isArray(nuevo)) throw 0;
+        var h = HistorialPM.leer(), ids = {}; h.forEach(function (a) { ids[a.id] = 1; });
+        nuevo.forEach(function (a) { if (a && a.id && !ids[a.id] && typeof a.nota === 'number') h.push(a); });
+        h.sort(function (a, b) { return a.id - b.id; }); HistorialPM.escribir(h); opciones(); pintar();
+        alert('Historial importado.');
+      } catch (e) { alert('El archivo no es un historial válido.'); }
+      inp.value = '';
+    };
+    r.readAsText(f);
+  }
+  opciones(); pintar();
+</script>
+</body>
+</html>
