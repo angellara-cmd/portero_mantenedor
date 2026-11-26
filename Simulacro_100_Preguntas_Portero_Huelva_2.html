@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro 2 (Nivel Examen) — Portero/a-Mantenedor/a Ayto. Huelva</title>
+<style>
+  :root {
+    --bg: #f1f5f9;
+    --surface: #ffffff;
+    --surface-alt: #f8fafc;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --border: #cbd5e1;
+    --primary: #004b87;
+    --primary-light: #e0f2fe;
+    --accent: #0284c7;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+    --warn: #b45309;
+    --warn-bg: #fef3c7;
+  }
+  [data-theme="dark"] {
+    --bg: #0b1120;
+    --surface: #111827;
+    --surface-alt: #1e293b;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --primary: #38bdf8;
+    --primary-light: rgba(56, 189, 248, 0.14);
+    --accent: #7dd3fc;
+    --success: #4ade80;
+    --success-bg: rgba(74, 222, 128, 0.15);
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.15);
+    --warn: #fbbf24;
+    --warn-bg: rgba(251, 191, 36, 0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding-bottom: 5rem;
+  }
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 1rem;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .top-left { display: flex; align-items: center; gap: 0.6rem; }
+  .btn {
+    background: var(--surface-alt); border: 1px solid var(--border); color: var(--text);
+    padding: 0.45rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.84rem;
+    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn-primary:hover { opacity: 0.92; }
+  .stats-bar { display: flex; align-items: center; gap: 0.85rem; font-size: 0.85rem; font-weight: 700; }
+  .timer {
+    background: var(--primary-light); color: var(--primary);
+    padding: 0.35rem 0.75rem; border-radius: 999px; font-variant-numeric: tabular-nums;
+  }
+  .timer.low { background: var(--danger-bg); color: var(--danger); }
+
+  .container { max-width: 920px; margin: 1.5rem auto; padding: 0 1rem; }
+  .header-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.5rem; margin-bottom: 1.5rem; border-top: 5px solid var(--primary);
+  }
+  .header-card h1 { font-size: 1.4rem; color: var(--primary); margin-bottom: 0.4rem; }
+  .header-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+  .results-panel {
+    display: none; background: var(--surface); border: 2px solid var(--primary);
+    border-radius: 14px; padding: 1.5rem; margin-bottom: 1.75rem;
+  }
+  .results-panel.show { display: block; }
+  .score-big { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0.3rem 0; }
+  .score-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem; margin: 1rem 0;
+  }
+  .score-box {
+    background: var(--surface-alt); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.75rem; text-align: center;
+  }
+  .score-box strong { display: block; font-size: 1.25rem; }
+  .score-box span { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+  .q-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.25rem 1.35rem; margin-bottom: 1rem;
+  }
+  .q-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.55rem; font-size: 0.76rem; font-weight: 700; color: var(--text-muted);
+  }
+  .q-badge {
+    background: var(--primary-light); color: var(--primary);
+    padding: 0.18rem 0.6rem; border-radius: 999px;
+  }
+  .q-text { font-weight: 600; font-size: 0.96rem; margin-bottom: 0.85rem; }
+  .opts { display: flex; flex-direction: column; gap: 0.45rem; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 0.9rem; background: var(--surface); transition: 0.12s;
+  }
+  .opt:hover { border-color: var(--accent); background: var(--surface-alt); }
+  .opt.selected { background: var(--primary-light); border-color: var(--primary); font-weight: 500; }
+  .opt.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: var(--success); font-weight: 600; }
+  .opt.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: var(--danger); }
+  .exp {
+    display: none; margin-top: 0.75rem; padding: 0.75rem 0.9rem;
+    background: var(--surface-alt); border-left: 4px solid var(--accent);
+    border-radius: 6px; font-size: 0.85rem; color: var(--text);
+  }
+  .exp.show { display: block; }
+  .footer-actions {
+    display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem;
+  }
+  @media (max-width: 600px) {
+    .q-card { padding: 1rem; }
+    .header-card h1 { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="top-left">
+    <a href="test.html" class="btn">&larr; Ejercicios</a>
+    <button class="btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+  <div class="stats-bar">
+    <span id="answeredCount">0 / 100</span>
+    <span class="timer" id="timerDisplay">60:00</span>
+    <button class="btn btn-primary" id="gradeBtnTop" onclick="gradeExam()">Corregir</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header-card">
+    <h1>Simulacro N.º 2 — Nivel Tribunal (<span class="nQ">100</span> Preguntas)</h1>
+    <p>Batería inédita con distractores técnicos y legales homogéneos · Baremo BOP Huelva: +0,10 acierto | -0,025 fallo (4:1) | 0,00 en blanco · Corte: 5,00 puntos. Al final hay 5 preguntas de reserva que no puntúan (en el examen real sustituyen a las anuladas).</p>
+  </div>
+
+  <div class="results-panel" id="resultsPanel">
+    <div style="font-weight:700;color:var(--text-muted);font-size:0.85rem;">CALIFICACIÓN FINAL (SOBRE 10,00 PUNTOS)</div>
+    <div class="score-big" id="finalScore">0,00 pts</div>
+    <div id="passStatus" style="font-weight:700;margin-bottom:0.5rem;"></div>
+    <div class="score-grid">
+      <div class="score-box"><strong id="resOk" style="color:var(--success)">0</strong><span>Aciertos (+0,10)</span></div>
+      <div class="score-box"><strong id="resFail" style="color:var(--danger)">0</strong><span>Fallos (-0,025)</span></div>
+      <div class="score-box"><strong id="resBlank">0</strong><span>En blanco</span></div>
+      <div class="score-box"><strong id="resTime">00:00</strong><span>Tiempo usado</span></div>
+    </div>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.8rem;">
+      <button class="btn" onclick="filterQuestions('all')">Ver todas (<span class="nQ">100</span>)</button>
+      <button class="btn" onclick="filterQuestions('wrong')">Ver solo falladas</button>
+      <button class="btn" onclick="filterQuestions('blank')">Ver en blanco</button>
+      <button class="btn btn-primary" onclick="location.reload()">Nuevo intento</button>
+    </div>
+  </div>
+
+  <div id="questionsContainer"></div>
+
+  <div class="footer-actions">
+    <button class="btn btn-primary" style="padding:0.8rem 1.75rem;font-size:1rem;" onclick="gradeExam()">Finalizar y Corregir Simulacro</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // BLOQUE I: TEMAS 1, 2 Y 3 (24 preguntas inéditas)
+  { t: "Tema 1", q: "De acuerdo con el artículo 1.3 de la Constitución Española de 1978, ¿cuál es la forma política del Estado español?", opts: ["La República parlamentaria democrática.", "La Monarquía parlamentaria.", "La Monarquía constitucional ejecutiva.", "El Estado autonómico descentralizado."], a: 1, e: "Art. 1.3 CE: La forma política del Estado español es la Monarquía parlamentaria." },
+  { t: "Tema 1", q: "Según el artículo 3.1 de la Constitución Española, respecto al castellano como lengua española oficial del Estado:", opts: ["Todos los españoles tienen el deber de conocerla y el derecho a usarla.", "Todos los españoles tienen el derecho de conocerla y el deber de usarla.", "Es cooficial únicamente en las Comunidades Autónomas sin lengua propia.", "Su uso es potestativo en las actuaciones ante la Administración General del Estado."], a: 0, e: "Art. 3.1 CE: Todos los españoles tienen el deber de conocerla y el derecho a usarla." },
+  { t: "Tema 1", q: "¿Qué Título de la Constitución Española de 1978 regula la Organización Territorial del Estado?", opts: ["El Título VII (artículos 128 a 136).", "El Título VIII (artículos 137 a 158).", "El Título VI (artículos 117 a 127).", "El Título IV (artículos 97 a 107)."], a: 1, e: "El Título VIII CE (arts. 137-158) regula la Organización Territorial del Estado." },
+  { t: "Tema 1", q: "Conforme al artículo 3.1 del Estatuto de Autonomía para Andalucía (LO 2/2007), la bandera de Andalucía está formada por tres franjas horizontales:", opts: ["Verde, blanca y verde, siendo la blanca de doble anchura que las verdes.", "Verde, blanca y verde, de igual anchura, aprobada en la Asamblea de Ronda de 1918.", "Blanca, verde y blanca, de igual anchura, aprobada en la Junta Liberalista de 1933.", "Verde, amarilla y verde, de igual anchura, establecida en la Constitución de Antequera."], a: 1, e: "Art. 3.1 EAA: Tres franjas horizontales —verde, blanca y verde— de igual anchura (Asamblea de Ronda de 1918)." },
+  { t: "Tema 1", q: "De acuerdo con el artículo 4.1 del Estatuto de Autonomía para Andalucía, la capital de Andalucía es la ciudad de Sevilla, siendo sede de:", opts: ["El Parlamento, la Presidencia de la Junta y el Tribunal Superior de Justicia de Andalucía.", "El Parlamento, la Presidencia de la Junta y el Consejo de Gobierno.", "El Consejo de Gobierno, el Defensor del Pueblo Andaluz y el Tribunal Superior de Justicia.", "Exclusivamente la Presidencia de la Junta y las Consejerías de la Administración autonómica."], a: 1, e: "Art. 4.1 EAA: Sevilla es sede del Parlamento, de la Presidencia de la Junta y del Consejo de Gobierno." },
+  { t: "Tema 1", q: "Según el artículo 141.2 de la Constitución Española, el gobierno y la administración autónoma de las provincias estarán encomendados a:", opts: ["Los Ayuntamientos respectivos de cada término municipal.", "Las Diputaciones u otras Corporaciones de carácter representativo.", "Las Delegaciones del Gobierno de la Comunidad Autónoma.", "Los Consejos Comarcales creados por ley orgánica."], a: 1, e: "Art. 141.2 CE: A Diputaciones u otras Corporaciones de carácter representativo (Cabildos en Canarias, Consejos en Baleares)." },
+  { t: "Tema 1", q: "¿Qué Ley autonómica regula específicamente el régimen local en Andalucía desarrollando el Estatuto de Autonomía?", opts: ["La Ley 5/2010, de 11 de junio, de Autonomía Local de Andalucía (LAULA).", "La Ley 7/1985, de 2 de abril, Reguladora de las Bases del Régimen Local.", "El Real Decreto Legislativo 781/1986, de 18 de abril.", "La Ley 12/2007, de 26 de noviembre, de Régimen Local Andaluz."], a: 0, e: "La Ley 5/2010, de 11 de junio, es la Ley de Autonomía Local de Andalucía (LAULA)." },
+  { t: "Tema 2", q: "Conforme al artículo 2.2 de la Ley 39/2015 (LPACAP), las entidades de derecho privado vinculadas o dependientes de las Administraciones Públicas quedarán sujetas a lo dispuesto en las normas de esta Ley:", opts: ["En toda su actividad contractual y laboral de carácter privado.", "Cuando ejerzan potestades administrativas, y en todo caso en lo referido específicamente a ellas.", "Únicamente cuando reciban subvenciones superiores al cincuenta por ciento de su presupuesto.", "Exclusivamente en materia de contratación de personal directivo."], a: 1, e: "Art. 2.2.b LPACAP: Quedarán sujetas cuando ejerzan potestades administrativas." },
+  { t: "Tema 2", q: "De acuerdo con el artículo 4.1 de la Ley 39/2015, se consideran interesados en el procedimiento administrativo:", opts: ["Quienes lo promuevan como titulares de derechos o intereses legítimos individuales o colectivos.", "Cualquier ciudadano que solicite información general en un mostrador de atención al público.", "Los funcionarios que informen el expediente administrativo en fase de instrucción.", "Únicamente quienes ostenten un derecho subjetivo reconocido por sentencia judicial firme."], a: 0, e: "Art. 4.1.a LPACAP define la primera categoría de interesado." },
+  { t: "Tema 2", q: "Según el artículo 5.4 de la Ley 39/2015, ¿cómo puede acreditarse la representación ante las Administraciones Públicas?", opts: ["Únicamente mediante poder notarial inscrito en el Registro Mercantil.", "Mediante cualquier medio válido en Derecho que deje constancia fidedigna de su existencia, o mediante declaración en comparecencia personal o electrónica (apud acta).", "Exclusivamente mediante firma electrónica avanzada del representante en el escrito inicial.", "Solo mediante certificación expedida por el Secretario del Ayuntamiento."], a: 1, e: "Art. 5.4 LPACAP admite cualquier medio válido en Derecho o apoderamiento apud acta presencial o electrónico." },
+  { t: "Tema 2", q: "De conformidad con el artículo 5.5 de la Ley 39/2015, el órgano competente para la tramitación del procedimiento deberá incorporar al expediente administrativo acreditación de la condición de representante y de los poderes que tiene reconocidos:", opts: ["En el momento de dictar la resolución definitiva del procedimiento.", "En dicho momento (al tramitar), siendo suficiente el documento acreditativo o copia del mismo.", "Únicamente si otra persona interesada impugna la representación.", "En el plazo de un mes desde la notificación del trámite de audiencia."], a: 1, e: "Art. 5.5 LPACAP obliga a incorporar al expediente acreditación de la representación en ese momento." },
+  { t: "Tema 2", q: "Conforme al artículo 23.2.d de la Ley 40/2015 (LRJSP), es motivo de abstención en el procedimiento haber intervenido en el mismo como:", opts: ["Abogado de oficio en otro procedimiento civil distinto.", "Perito o como testigo en el procedimiento de que se trate.", "Empleado encargado de la recepción en el Registro General.", "Notificador postal del acuerdo de iniciación."], a: 1, e: "Art. 23.2.d LRJSP: Haber intervenido como perito o como testigo en el procedimiento de que se trate." },
+  { t: "Tema 2", q: "Según el artículo 23.4 de la Ley 40/2015, la actuación de autoridades y personal al servicio de las Administraciones Públicas en los que concurran motivos de abstención:", opts: ["Determinará automáticamente la nulidad de pleno derecho de todo el expediente.", "No implicará, necesariamente, y en todo caso, la invalidez de los actos en que hayan intervenido.", "Conllevará siempre la anulabilidad del acto si lo solicita el Ministerio Fiscal.", "Suspenderá la ejecutividad del acto durante seis meses."], a: 1, e: "Art. 23.4 LRJSP: No implicará necesariamente y en todo caso la invalidez de los actos, sin perjuicio de responsabilidad." },
+  { t: "Tema 2", q: "De acuerdo con el artículo 24.2 de la Ley 40/2015, en el escrito en que se plantee la recusación de un empleado público deberá expresarse:", opts: ["La cuantía económica de la indemnización solicitada por el interesado.", "La causa o causas en que se funda.", "El nombre del sustituto propuesto por el interesado recusante.", "El informe previo favorable del órgano consultivo autonómico."], a: 1, e: "Art. 24.2 LRJSP: La recusación se planteará por escrito en el que se expresará la causa o causas en que se funda." },
+  { t: "Tema 2", q: "Según el artículo 3.2 de la Ley 40/2015, las Administraciones Públicas se relacionarán entre sí y con sus órganos, organismos públicos y entidades vinculados o dependientes a través de:", opts: ["Correo postal certificado con acuse de recibo en papel.", "Medios electrónicos, que aseguren la interoperabilidad y seguridad de los sistemas y soluciones adoptadas por cada una de ellas.", "Valija diplomática semanal coordinada por la Subdelegación del Gobierno.", "Fax institucional con confirmación escrita archivada."], a: 1, e: "Art. 3.2 LRJSP establece la relación interadministrativa obligatoria por medios electrónicos." },
+  { t: "Tema 3", q: "De conformidad con el artículo 20 del RDL 2/2004 (TRLRHL), las Entidades Locales podrán establecer tasas por:", opts: ["El incremento de valor experimentado por los terrenos urbanos en transmisiones intervivos.", "La utilización privativa o el aprovechamiento especial del dominio público local, así como por la prestación de servicios públicos o realización de actividades administrativas de competencia local que se refieran, afecten o beneficien de modo particular a los sujetos pasivos.", "La mera titularidad de bienes inmuebles rústicos y urbanos en el término municipal.", "La realización de obras de nueva planta en suelo urbano consolidado."], a: 1, e: "Art. 20.1 TRLRHL define el hecho imponible de las tasas locales." },
+  { t: "Tema 3", q: "¿Cuál de los siguientes impuestos municipales del RDL 2/2004 tiene carácter POTESTATIVO para los Ayuntamientos?", opts: ["El Impuesto sobre Vehículos de Tracción Mecánica (IVTM).", "El Impuesto sobre el Incremento de Valor de los Terrenos de Naturaleza Urbana (IIVTNU).", "El Impuesto sobre Actividades Económicas (IAE).", "El Impuesto sobre Bienes Inmuebles (IBI)."], a: 1, e: "Son potestativos el ICIO y el IIVTNU (Plusvalía municipal); son obligatorios IBI, IAE e IVTM." },
+  { t: "Tema 3", q: "Según el artículo 14 de la Constitución Española, los españoles son iguales ante la ley, sin que pueda prevalecer discriminación alguna por razón de:", opts: ["Nacimiento, raza, sexo, religión, opinión o cualquier otra condición o circunstancia personal o social.", "Edad, vecindad civil, titulación académica o situación patrimonial.", "Nacimiento, lengua, residencia administrativa o afiliación sindical.", "Origen territorial, nivel de renta, estado civil o profesión."], a: 0, e: "Enumeración literal del artículo 14 de la Constitución Española." },
+  { t: "Tema 3", q: "Conforme a la Ley Orgánica 3/2018 (LOPDGDD), ¿cuál de los siguientes derechos NO forma parte del catálogo clásico de derechos del interesado (ARSOPOL)?", opts: ["Derecho de portabilidad de los datos.", "Derecho de expropiación forzosa de ficheros.", "Derecho a la limitación del tratamiento.", "Derecho de supresión ('al olvido')."], a: 1, e: "Los derechos son Acceso, Rectificación, Supresión, Oposición, Portabilidad y Limitación (arts. 13-18 LOPDGDD)." },
+  { t: "Tema 3", q: "De acuerdo con el artículo 22.4 de la LOPDGDD, el deber de información en materia de videovigilancia en edificios públicos se entenderá cumplido mediante:", opts: ["La publicación anual de un edicto en el Boletín Oficial de la Provincia.", "La colocación de un dispositivo informativo en lugar suficientemente visible identificando, al menos, la existencia del tratamiento, la identidad del responsable y la posibilidad de ejercitar los derechos previstos en los artículos 15 a 22 del RGPD.", "La entrega individualizada de un folleto informativo a cada ciudadano que acceda al inmueble.", "La mención genérica en la ordenanza fiscal reguladora de tasas."], a: 1, e: "Art. 22.4 LOPDGDD regula el cartel/dispositivo informativo visible de videovigilancia." },
+  { t: "Tema 3", q: "En relación con los principios del tratamiento de datos personales del artículo 5 del RGPD, el principio de 'integridad y confidencialidad' exige que los datos sean tratados:", opts: ["De manera que se garantice una seguridad adecuada de los datos personales, incluida la protección contra el tratamiento no autorizado o ilícito y contra su pérdida, destrucción o daño accidental.", "Conservándolos indefinidamente en soporte papel sin destruirse nunca.", "Facilitando su consulta libre a cualquier empleado del edificio.", "Publicándolos en el tablón de anuncios del vestíbulo."], a: 0, e: "Art. 5.1.f RGPD define el principio de integridad y confidencialidad." },
+  { t: "Tema 3", q: "En Andalucía, la Ley integral para la promoción de la igualdad de género es:", opts: ["La Ley 12/2007, de 26 de noviembre.", "La Ley 4/2023, de 28 de febrero.", "La Ley 8/2017, de 28 de diciembre.", "La Ley 3/2007, de 22 de marzo."], a: 0, e: "Ley 12/2007 (Andalucía) y LO 3/2007 (estatal) regulan la igualdad efectiva entre mujeres y hombres." },
+  { t: "Tema 1", q: "¿Qué artículo del Estatuto de Autonomía para Andalucía establece el 28 de febrero como Día de Andalucía?", opts: ["El artículo 2.", "El artículo 3.4.", "El artículo 5.2.", "El artículo 10.1."], a: 1, e: "Art. 3.4 EAA: El Día de Andalucía es el 28 de febrero." },
+  { t: "Tema 2", q: "Según el artículo 4.2 de la Ley 39/2015, las asociaciones y organizaciones representativas de intereses económicos y sociales:", opts: ["Nunca pueden ostentar la condición de interesadas en procedimientos administrativos.", "Serán titulares de intereses legítimos colectivos en los términos que la Ley reconozca.", "Solo pueden intervenir si acreditan poder notarial de todos sus asociados.", "Actúan exclusivamente como peritos judiciales."], a: 1, e: "Art. 4.2 LPACAP reconoce la legitimación colectiva de asociaciones y organizaciones representativas." },
+
+  // BLOQUE II: TEMAS 4, 5, 6, 7 Y 8 (44 preguntas inéditas)
+  { t: "Tema 4", q: "Conforme a la Disposición Adicional Sexta del TREBEP y las Bases del Ayuntamiento de Huelva, para el acceso a las plazas de Portero/a-Mantenedor/a (Grupo AP):", opts: ["Se exige estar en posesión del título de Graduado en Educación Secundaria Obligatoria.", "No se exige estar en posesión de ninguna de las titulaciones previstas en el sistema educativo.", "Se requiere título de Formación Profesional de Grado Medio en Mantenimiento.", "Se exige título de Bachiller o Técnico equivalente."], a: 1, e: "DA 6.ª TREBEP: Para el acceso a las Agrupaciones Profesionales (AP) no se exige titulación del sistema educativo." },
+  { t: "Tema 4", q: "De acuerdo con la Base Primera de la convocatoria, entre las funciones del Portero/a-Mantenedor/a respecto a los equipos de oficina se incluye:", opts: ["La programación y desarrollo de aplicaciones informáticas corporativas.", "El manejo a nivel de usuario de PC y de máquinas reproductoras y auxiliares (fotocopiadoras, escáner, encuadernadoras, plastificadoras).", "La reparación electrónica interna de placas base y fuentes de alimentación de ordenadores.", "La firma digital de resoluciones administrativas en nombre del concejal delegado."], a: 1, e: "Base 1.ª: Manejo a nivel de usuario de PC y máquinas reproductoras/auxiliares." },
+  { t: "Tema 4", q: "En los deberes éticos y de conducta de los empleados públicos (artículos 52 a 54 del TREBEP), el deber de 'sigilo profesional' obliga al personal de conserjería a:", opts: ["Guardar discreción respecto de los asuntos que conozcan por razón de su cargo y no hacer uso indebido de la información obtenida.", "Comunicar a los medios de comunicación locales las incidencias internas del edificio.", "Facilitar a cualquier visitante los listados internos de personal de baja laboral.", "Comentar en el mostrador de entrada el contenido de los expedientes que traslada entre negociados."], a: 0, e: "Art. 53.12 TREBEP exige guardar sigilo respecto de los asuntos que conozcan por razón de su cargo." },
+  { t: "Tema 4", q: "¿Qué función desempeñaba tradicionalmente la figura municipal del 'Alguacil', integrada hoy funcionalmente en la Subescala Subalterna?", opts: ["La fiscalización previa de todos los gastos y pagos municipales.", "La práctica de citaciones y notificaciones, custodia de la Casa Consistorial y acompañamiento protocolario a la Corporación.", "La redacción de pliegos técnicos de obras públicas municipales.", "La dirección técnica del parque móvil de bomberos."], a: 1, e: "Perfil histórico y funcional del Alguacil municipal dentro de la Subescala Subalterna." },
+  { t: "Tema 5", q: "Si un ciudadano acude al mostrador de conserjería preguntando en qué estado de tramitación se encuentra una solicitud de licencia de obras presentada por su vecino, el Portero-Mantenedor debe:", opts: ["Consultar el expediente en el ordenador y facilitarle copia de los informes técnicos.", "Informarle educadamente de que conserjería facilita información general, pero que el estado de un expediente concreto es información particular reservada a los interesados en la unidad tramitadora correspondiente.", "Pedirle el DNI y darle todos los datos verbales del expediente del vecino.", "Facilitarle el teléfono móvil personal del arquitecto municipal."], a: 1, e: "Distinción entre información general (pública) e información particular (solo interesados acreditados, art. 53.1.a LPACAP)." },
+  { t: "Tema 5", q: "En la atención presencial a personas con discapacidad auditiva en un punto de información municipal, ¿cuál de las siguientes pautas comunicativas es correcta?", opts: ["Gritar muy fuerte pegado al oído del ciudadano para que perciba las vibraciones.", "Situarse de frente con buena iluminación en el rostro, vocalizar claramente sin exagerar ni taparse la boca, manteniendo contacto visual.", "Hablarle mirando hacia el ordenador mientras se teclea para ganar tiempo.", "Evitar cualquier apoyo gestual o escrito durante la explicación."], a: 1, e: "Facilita la lectura labial y la comprensión visual." },
+  { t: "Tema 5", q: "En las técnicas de comunicación asertiva aplicadas a la atención ciudadana, la técnica del 'disco rayado' consiste en:", opts: ["Repetir de forma tranquila, educada y firme el mensaje o norma que debe cumplirse, sin entrar en provocaciones ni alterar el tono de voz.", "Elevar progresivamente el volumen de voz hasta acallar al ciudadano.", "Ceder inmediatamente ante cualquier exigencia irregular para evitar conflictos.", "Cortar la conversación dando la espalda al interlocutor."], a: 0, e: "El disco rayado es una técnica clásica de asertividad para mantener límites sin agresividad." },
+  { t: "Tema 5", q: "Dentro de los elementos paraverbales de la comunicación oral en atención al público se incluyen:", opts: ["La postura corporal, la sonrisa y la distancia interpersonal.", "El tono, el timbre, el volumen, el ritmo y las pausas de la voz.", "La estructura gramatical y el vocabulario técnico empleado.", "La uniformidad reglamentaria y la tarjeta identificativa."], a: 1, e: "Lo paraverbal abarca 'cómo' se dice (tono, volumen, ritmo, entonación); lo no verbal es el lenguaje corporal." },
+  { t: "Tema 5", q: "Durante una llamada telefónica entrante en el Ayuntamiento, antes de transferir la comunicación a una extensión interna debe:", opts: ["Transferir la llamada en silencio sin avisar al ciudadano.", "Informar al ciudadano del departamento o extensión a la que se le transfiere y pulsar la tecla de retención o espera (nunca dejar el auricular abierto sobre la mesa).", "Colgar primero para que el ciudadano vuelva a llamar directamente a la extensión.", "Dejar el micrófono abierto para que el ciudadano escuche las conversaciones del vestíbulo."], a: 1, e: "Protocolo profesional de transferencia telefónica institucional." },
+  { t: "Tema 5", q: "Cuando un interlocutor telefónico solicita hablar con un responsable municipal que en ese momento está ausente o reunido, la respuesta adecuada es:", opts: ["Decir simplemente 'No está, llame usted otro día' y colgar.", "Indicar que en ese momento no puede atenderle sin dar explicaciones privadas innecesarias y ofrecer tomar nota del recado para que le devuelvan la llamada.", "Informar detalladamente de su vida privada o agenda médica.", "Transferir la llamada a una extensión aleatoria para que otro compañero lo resuelva."], a: 1, e: "Combina discreción profesional, cortesía y eficacia operativa." },
+  { t: "Tema 5", q: "Al finalizar una llamada telefónica de atención ciudadana, ¿cuál es la regla de cortesía institucional respecto al cierre de la comunicación?", opts: ["Colgar inmediatamente tras decir 'Adiós' sin esperar respuesta.", "Despedirse cordialmente agradeciendo la llamada y esperar a que sea el ciudadano quien cuelgue primero.", "Mantener la línea abierta durante dos minutos en silencio.", "Transferir la llamada a la centralita automática."], a: 1, e: "El interlocutor externo (ciudadano) siempre debe colgar primero." },
+  { t: "Tema 5", q: "¿Qué teléfonos de emergencia externa deben figurar en lugar destacado en el listín de conserjería de un centro municipal de Huelva?", opts: ["112 (Emergencias), 092 (Policía Local), 091 (Policía Nacional), 080 (Bomberos) y 061 (Emergencias Sanitarias).", "Únicamente el 112 y el teléfono de mantenimiento informático.", "Exclusivamente los números fijos de las concejalías.", "Solo el teléfono de la empresa suministradora de papel."], a: 0, e: "Listado estándar de emergencias operativas en Huelva capital." },
+  { t: "Tema 6", q: "En el control de accesos de empresas externas o proveedores que acuden a realizar una reparación en un edificio municipal, el Portero-Mantenedor debe:", opts: ["Entregarles la llave maestra del edificio para que trabajen libremente sin registro.", "Comprobar su identidad y el aviso/autorización previa del servicio correspondiente, anotar su entrada/salida y facilitarles acreditación de visitante/contrata.", "Permitirles el acceso directo a archivos confidenciales sin acompañamiento.", "Retener su herramienta hasta que finalice la jornada administrativa."], a: 1, e: "Control de contratas: verificación de autorización previa, registro de acceso y acreditación." },
+  { t: "Tema 6", q: "Respecto a la realización de duplicados o copias de llaves de dependencias municipales por parte del personal de conserjería:", opts: ["Pueden realizarse libremente en cualquier ferretería si se pierde una llave.", "Está estrictamente prohibido hacer duplicados sin autorización expresa del órgano o responsable competente, debiendo quedar constancia escrita de toda entrega o copia.", "Cada trabajador puede llevarse a su domicilio una copia de seguridad de todas las puertas.", "Deben guardarse copias sin identificar en los cajones del mostrador."], a: 1, e: "Norma básica de seguridad física y custodia de llaves en edificios públicos." },
+  { t: "Tema 6", q: "Al realizar la apertura matinal de un centro público, ¿en qué orden lógico debe procederse?", opts: ["Encender toda la climatización al máximo &rarr; abrir puertas de emergencia &rarr; desconectar alarma &rarr; revisar exterior.", "Inspección visual exterior de accesos &rarr; entrada y desactivación del sistema de alarma &rarr; encendido de alumbrado general &rarr; comprobación de vías de evacuación y aseos.", "Abrir todas las ventanas &rarr; activar la alarma &rarr; encender ordenadores de despachos.", "Desconectar el diferencial general &rarr; abrir puertas principales &rarr; revisar extintores."], a: 1, e: "Secuencia lógica y segura de apertura de edificios." },
+  { t: "Tema 6", q: "Durante la ronda de cierre vespertino de un edificio público, tras comprobar que no queda ninguna persona en su interior y apagar el alumbrado ordinario, ¿qué iluminación debe permanecer operativa?", opts: ["Ninguna, se debe cortar el Interruptor General Automático (IGA).", "El alumbrado de emergencia (en estado de reposo/carga) y, en su caso, el alumbrado de vigilancia o balizamiento nocturno previsto.", "Todas las luminarias de los pasillos al cien por cien de potencia.", "Únicamente las luces de los aseos de planta baja."], a: 1, e: "Nunca se corta el IGA en cierre ordinario porque dejaría sin alimentación sistemas de alarma, servidores, central PCI y carga de emergencias." },
+  { t: "Tema 6", q: "En un Cuadro General de Mando y Protección (CGMP), ¿cuál es la función específica de los Pequeños Interruptores Automáticos (PIA o magnetotérmicos)?", opts: ["Proteger a las personas contra fugas de corriente a tierra de 30 mA.", "Proteger individualmente cada circuito interior (alumbrado, fuerza, climatización) frente a sobrecargas y cortocircuitos.", "Medir el consumo energético activo en kilovatios-hora.", "Transformar la corriente alterna en corriente continua."], a: 1, e: "Los PIA protegen conductores y receptores de cada línea frente a sobrecargas (efecto térmico) y cortocircuitos (efecto magnético)." },
+  { t: "Tema 6", q: "¿Con qué periodicidad mínima se recomienda accionar el botón de prueba ('T' o 'Test') de los Interruptores Diferenciales (ID) en instalaciones públicas para verificar que su mecanismo de disparo no está agarrotado?", opts: ["Una vez cada cinco años.", "Periódicamente (mensualmente o según plan de mantenimiento preventivo del edificio).", "Únicamente cuando se produce un corte de suministro eléctrico en la calle.", "Nunca, porque su pulsación destruye el diferencial."], a: 1, e: "Los fabricantes y protocolos de mantenimiento recomiendan pulsar el botón 'T' mensualmente." },
+  { t: "Tema 6", q: "Para optimizar el consumo energético en la parada diaria de la climatización (calefacción o aire acondicionado) de un edificio administrativo, la práctica recomendada consiste en:", opts: ["Apagar los equipos aproximadamente entre 15 y 20 minutos antes del cierre del edificio para aprovechar la inercia térmica.", "Dejar los equipos encendidos toda la noche a temperatura mínima.", "Bajar el interruptor diferencial de fuerza mientras los compresores están a plena carga.", "Abrir todas las ventanas simultáneamente con la calefacción encendida."], a: 0, e: "Aprovecha la inercia térmica del inmueble sin pérdida de confort en los últimos minutos." },
+  { t: "Tema 6", q: "En la comprobación visual de los extintores portátiles durante las rondas de inspección de un edificio, se verifica su estado correcto cuando:", opts: ["La aguja del manómetro se encuentra en la zona verde, conserva el precinto y pasador intactos, y la etiqueta de revisión anual está vigente.", "La aguja del manómetro está en la zona roja izquierda y el precinto roto.", "Está apoyado directamente en el suelo detrás de una puerta cortafuegos.", "El manómetro marca cero bar de presión."], a: 0, e: "Zona verde = presión adecuada; izquierda roja = despresurizado; derecha roja = sobrepresión." },
+  { t: "Tema 7", q: "Cuando en conserjería se recibe correspondencia dirigida al Ayuntamiento (sin destinatario nominativo personal), ¿cuál es su destino inmediato dentro del circuito administrativo?", opts: ["Su apertura y lectura por el personal de conserjería para archivarla por fechas.", "Su traslado sin abrir al Registro General de Entrada para su apertura, asiento registral y distribución.", "Su depósito directo en la papelera si no lleva sello urgente.", "Su entrega directa a la Policía Local."], a: 1, e: "El Registro General es la unidad competente para la recepción, apertura y asiento de entrada de documentación oficial." },
+  { t: "Tema 7", q: "En el funcionamiento de la 'Valija Oficial' o interna entre distintas dependencias del Ayuntamiento de Huelva:", opts: ["Los documentos viajan sueltos sin carpeta ni relación de entrega.", "Se utiliza una cartera o valija cerrada en horarios preestablecidos acompañada de una hoja de control o relación de envíos que firma el receptor.", "Solo pueden enviarse paquetes particulares de los empleados.", "Se remite siempre por correo aéreo urgente."], a: 1, e: "Garantiza trazabilidad, confidencialidad y puntualidad entre sedes municipales." },
+  { t: "Tema 7", q: "Según el artículo 42.2 de la Ley 39/2015, en una notificación administrativa en papel en el domicilio del interesado, ¿qué margen mínimo de diferencia horaria debe existir entre el primer intento y el segundo intento?", opts: ["Al menos una hora de diferencia.", "Al menos tres horas de diferencia entre ambos intentos.", "Al menos doce horas de diferencia.", "Exactamente veinticuatro horas."], a: 1, e: "Art. 42.2 LPACAP: Dejando en todo caso al menos un margen de diferencia de tres horas entre ambos intentos." },
+  { t: "Tema 7", q: "De acuerdo con el artículo 41.1 de la Ley 39/2015, ¿cuándo podrá la Administración practicar las notificaciones por medios no electrónicos (en papel)?", opts: ["Cuando la notificación se realice con ocasión de la comparecencia espontánea del interesado o su representante en las oficinas de asistencia en materia de registros y solicite la comunicación o notificación personal en ese momento.", "Siempre que el expediente tenga más de diez folios.", "Exclusivamente cuando el interesado sea una persona jurídica.", "Nunca, en ningún supuesto."], a: 0, e: "Art. 41.1.a LPACAP contempla la comparecencia espontánea y cuando resulte necesario para asegurar la eficacia de la actuación." },
+  { t: "Tema 7", q: "¿Qué documento acredita la recepción efectiva de una carta certificada con aviso de recibo (o Prueba de Entrega Electrónica - PEE) en el ámbito administrativo?", opts: ["El resguardo de admisión sin firma del destinatario.", "La tarjeta de aviso de recibo o certificación digital donde consta la fecha, hora, identidad y firma del receptor (o el resultado de los intentos realizados).", "Una fotografía del portal del edificio.", "El sello de salida de la máquina franqueadora."], a: 1, e: "Constancia fehaciente imprescindible para acreditar plazos administrativos." },
+  { t: "Tema 7", q: "¿Cuál es la principal ventaja operativa de utilizar una 'máquina franqueadora' en el servicio de correspondencia de un organismo público?", opts: ["Permite enviar correos electrónicos certificados sin conexión a internet.", "Estampa directamente sobre el sobre el importe exacto según peso, la fecha y el emblema institucional, llevando un contador automático del gasto postal.", "Sustituye al Registro General de Entrada.", "Permite plastificar automáticamente los sobres acolchados."], a: 1, e: "Agiliza el franqueo de grandes volúmenes y controla el saldo postal." },
+  { t: "Tema 7", q: "¿Qué artículo de la Constitución Española garantiza el secreto de las comunicaciones y, en especial, de las postales, telegráficas y telefónicas, salvo resolución judicial?", opts: ["El artículo 18.3.", "El artículo 20.1.", "El artículo 14.", "El artículo 105.b."], a: 0, e: "Art. 18.3 CE: Se garantiza el secreto de las comunicaciones y, en especial, de las postales, telegráficas y telefónicas, salvo resolución judicial." },
+  { t: "Tema 8", q: "En la serie normalizada ISO 216 (Serie A), si doblamos por la mitad de su lado más largo una hoja de tamaño DIN A4 (210 × 297 mm), obtenemos dos hojas de tamaño:", opts: ["DIN A3 (297 × 420 mm).", "DIN A5 (148 × 210 mm).", "DIN A6 (105 × 148 mm).", "DIN B4 (250 × 353 mm)."], a: 1, e: "Cada formato de la serie A es exactamente la mitad del anterior: A4 -> A5 (148 x 210 mm)." },
+  { t: "Tema 8", q: "¿Qué significa que el papel estándar de fotocopiadora utilizado habitualmente en oficinas tenga un gramaje de '80 g/m²'?", opts: ["Que cada paquete de 500 hojas pesa exactamente 80 gramos.", "Que una hoja de un metro cuadrado de superficie de ese papel (equivalente a un pliego DIN A0) pesa 80 gramos.", "Que el grosor del papel es de 80 milímetros.", "Que solo admite impresión por una sola cara."], a: 1, e: "El gramaje mide el peso en gramos por metro cuadrado de papel (DIN A0 = 1 m²)." },
+  { t: "Tema 8", q: "Cuando una fotocopiadora multifunción presenta un atasco de papel en su interior, ¿cuál es la secuencia correcta de actuación?", opts: ["Tirar con fuerza del papel hacia atrás sin abrir las cubiertas laterales.", "Abrir las compuertas indicadas en el panel, retirar suavemente el papel en el sentido de avance (evitando tocar la unidad fusora caliente) y cerrar firmemente las cubiertas.", "Introducir unas tijeras metálicas para cortar la hoja atascada.", "Apagar y encender diez veces seguidas el interruptor general hasta que expulse el papel."], a: 1, e: "Tirar en sentido contrario o con herramientas metálicas daña los rodillos y el tambor fotosensible." },
+  { t: "Tema 8", q: "¿Qué función cumple el 'Alimentador Automático de Documentos' (ADF o DADF) situado en la parte superior de una fotocopiadora o escáner?", opts: ["Grapar automáticamente los juegos de copias realizados.", "Permitir el escaneo o copiado secuencial de varias hojas sueltas (a una o doble cara en DADF) sin tener que levantar la tapa cristal por cada página.", "Pesar los sobres antes del franqueo postal.", "Destruir los originales una vez escaneados."], a: 1, e: "ADF (Automatic Document Feeder) / DADF (Duplex ADF para doble cara automática)." },
+  { t: "Tema 8", q: "Al enviar un documento mediante un equipo de telefax, ¿por qué es buena práctica conservar el 'reporte o informe de transmisión' junto al documento original?", opts: ["Porque sustituye al timbre de la tasa municipal.", "Porque acredita la fecha, hora, número de destino, páginas enviadas y confirmación ('OK') de recepción en el terminal destinatario.", "Porque permite volver a imprimir el documento si se agota el tóner.", "Porque sirve como factura del consumo telefónico mensual."], a: 1, e: "Constituye el justificante operativo del envío por fax." },
+  { t: "Tema 8", q: "En el uso de una guillotina manual de palanca para cortar papel en reprografía, la norma básica de seguridad exige:", opts: ["Sujetar el papel con los dedos por debajo de la cuchilla mientras se baja la palanca.", "Mantener siempre colocada la pantalla transparente de protección, sujetar el papel por detrás del pisón y dejar la cuchilla bajada y bloqueada con su pestillo tras finalizar.", "Afilar la cuchilla con una lima metálica mientras está levantada.", "Cortar de una sola vez bloques de más de 200 hojas de cartulina."], a: 1, e: "Prevención de cortes graves en manos y dedos." },
+  { t: "Tema 8", q: "Si un documento administrativo debe ordenarse siguiendo el criterio 'cronológico', se dispondrá:", opts: ["Por orden alfabético del primer apellido del interesado.", "Por la fecha del documento (del más antiguo al más reciente, o viceversa según el criterio de archivo establecido).", "Por el número de registro de salida correlativo.", "Por la materia o departamento municipal de origen."], a: 1, e: "Ordenación cronológica = por fechas." },
+
+  // BLOQUE III: TEMAS 9, 10, 11 Y 12 (32 preguntas inéditas)
+  { t: "Tema 9", q: "En la preparación de una sala para un curso de formación o una prueba selectiva escrita, ¿qué disposición de mobiliario es la más adecuada?", opts: ["Disposición en 'U' abierta.", "Disposición en 'escuela' (filas paralelas orientadas hacia el frente con mesa o superficie de escritura).", "Disposición en 'cóctel' sin sillas.", "Disposición en círculo cerrado sin mesas."], a: 1, e: "Escuela = filas con mesa; Auditorio/Teatro = filas solo con sillas; 'U' = debate/reunión participativa." },
+  { t: "Tema 9", q: "De acuerdo con la Ley 39/1981 por la que se regula el uso de la bandera de España, cuando junto a la bandera de España ondean únicamente otras dos banderas (en total un número PAR, 2 o 4), ¿qué posición ocupa la bandera de España?", opts: ["El extremo derecho (izquierda del observador) o la posición central derecha si son cuatro.", "Siempre el extremo izquierdo (derecha del observador).", "Debe retirarse para dejar solo las banderas autonómica y local.", "En un mástil de menor altura que las demás."], a: 0, e: "En número par de banderas, la de España ocupa la posición de máxima preeminencia (derecha protocolaria = izquierda del espectador, o centro-derecha en pares múltiples)." },
+  { t: "Tema 9", q: "Al trasladar cajas pesadas de material de oficina mediante una carretilla de mano de dos ruedas ('diablillo'), ¿cómo debe distribuirse la carga?", opts: ["Colocando las cajas más pesadas en la parte superior para equilibrar el manillar.", "Colocando las cajas más pesadas en la base inferior de la pala para mantener bajo el centro de gravedad y empujando hacia delante siempre que sea posible.", "Apilando las cajas por encima de la altura de los ojos del operario.", "Tirando siempre de la carretilla hacia atrás en terrenos llanos."], a: 1, e: "Centro de gravedad bajo, visibilidad despejada y empuje frontal." },
+  { t: "Tema 9", q: "Si al conectar un ordenador portátil por cable HDMI a un videoproyector en un salón de actos se visualiza correctamente la imagen en la pantalla pero no se escucha el sonido por la megafonía de la sala:", opts: ["Debe seleccionarse en la configuración de sonido del ordenador la salida de audio correspondiente (HDMI o salida de auriculares/línea conectada a la mesa de mezclas) y comprobar que el canal no esté silenciado (mute).", "El cable HDMI está roto porque nunca transmite sonido.", "Es necesario cambiar la lámpara del proyector.", "Se debe desconectar la alimentación Phantom de todos los micrófonos."], a: 0, e: "Fallo habitual en salas: el PC mantiene activos sus altavoces internos en lugar de derivar el audio a la salida conectada." },
+  { t: "Tema 9", q: "¿Qué tipo de cable y conector se emplea de forma estándar en instalaciones profesionales de megafonía para transmitir señal balanceada de micrófono sin interferencias a larga distancia?", opts: ["Cable coaxial con conector RCA.", "Cable balanceado de tres hilos con conector XLR (Canon).", "Cable paralelo de dos hilos sin apantallar con conector Jack mono.", "Cable de red RJ-45."], a: 1, e: "El conector XLR (Canon) de 3 pines transmite señal balanceada, eliminando ruidos electromagnéticos." },
+  { t: "Tema 9", q: "En las instalaciones de megafonía distribuida de edificios públicos con múltiples altavoces de techo o columna repartidos por pasillos, ¿qué tecnología de línea se utiliza habitualmente para evitar pérdidas de potencia por distancia?", opts: ["Línea de baja impedancia a 4 ohmios.", "Línea de tensión constante a 100 V (con transformador adaptador en cada altavoz).", "Línea telefónica analógica a 12 V.", "Conexión directa por Bluetooth desde la mesa."], a: 1, e: "Las líneas de 100 V permiten tirar decenas de metros de cable con sección reducida y conectar múltiples altavoces en paralelo." },
+  { t: "Tema 9", q: "¿Qué característica define a un micrófono con patrón polar 'cardioide'?", opts: ["Capta el sonido por igual en los 360 grados alrededor de la cápsula.", "Capta principalmente el sonido procedente de la parte frontal y rechaza el sonido trasero, reduciendo el riesgo de acoples.", "Capta únicamente el sonido procedente de los laterales.", "Funciona exclusivamente bajo el agua."], a: 1, e: "Su diagrama polar tiene forma de corazón (cardioide), ideal para voces y evitar feedback." },
+  { t: "Tema 9", q: "Al recoger cables de micrófono o alimentación eléctrica tras un acto en el salón de actos, ¿cuál es la forma correcta de enrollarlos?", opts: ["Enrollarlos apretados alrededor del codo y el antebrazo haciendo nudos en los extremos.", "Enrollarlos en bucles amplios respetando su torsión natural ('over-under') sin doblarlos en ángulo agudo y sujetarlos con cinta de velcro.", "Dejarlos estirados cruzando las puertas de salida de emergencia.", "Doblarlos en zig-zag muy corto para guardarlos a presión."], a: 1, e: "Evita la rotura de los hilos internos de cobre y el efecto memoria." },
+  { t: "Tema 10", q: "Antes de sustituir un tubo fluorescente o una luminaria LED averiada en una oficina municipal, la primera medida obligatoria es:", opts: ["Subirse a una silla giratoria con ruedas para alcanzar el techo.", "Cortar la alimentación eléctrica del circuito correspondiente en el cuadro eléctrico (PIA de alumbrado) y verificar la ausencia de tensión.", "Mojar el tubo con un paño húmedo para evitar descargas electrostáticas.", "Quitar el cebador con los dedos mientras la luz parpadea."], a: 1, e: "Corte efectivo en cuadro y uso de escalera homologada (nunca sillas giratorias)." },
+  { t: "Tema 10", q: "En el mantenimiento de una instalación de iluminación fluorescente convencional con reactancia ferromagnética, si un tubo nuevo parpadea continuamente en sus extremos sin llegar a encenderse, el elemento defectuoso suele ser:", opts: ["El interruptor diferencial general.", "El cebador (arrancador).", "El cable de toma de tierra.", "El contador de agua."], a: 1, e: "El cebador proporciona el pico de encendido inicial; cuando falla, el tubo intenta cebar sin lograrlo." },
+  { t: "Tema 10", q: "Al reparar un grifo monomando de lavabo que pierde agua continuamente por el caño cuando está cerrado, la pieza que debe sustituirse tras cerrar la llave de escuadra es:", opts: ["La zapata o soleta de goma tradicional de rosca.", "El cartucho cerámico interior del monomando.", "El latiguillo de entrada de agua caliente.", "El sifón inferior de desagüe."], a: 1, e: "Los grifos de montura clásica llevan zapata/soleta; los monomandos llevan cartucho cerámico." },
+  { t: "Tema 10", q: "Ante un atasco leve en un lavabo o fregadero municipal, ¿cómo debe utilizarse correctamente un desatascador manual de ventosa?", opts: ["Aplicando previamente sosa cáustica concentrada y echando agua hirviendo encima.", "Tapando el orificio del rebosadero con un trapo húmedo para evitar que escape la presión y bombeando firmemente con la ventosa cubierta de agua.", "Golpeando el sifón de PVC con un martillo metálico.", "Desmontando la llave de paso general del edificio."], a: 1, e: "Si no se tapona el rebosadero, la presión del bombeo escapa por él sin empujar el tapón del desagüe." },
+  { t: "Tema 10", q: "¿Qué función cumple el 'sifón' instalado debajo de lavabos, fregaderos y botes sifónicos?", opts: ["Aumentar la presión del agua fría en el grifo.", "Mantener un cierre hidráulico (tapón permanente de agua) que impide el paso de malos olores y gases procedentes de la red de saneamiento.", "Calentar el agua sanitaria antes de salir por el caño.", "Filtrar la cal del agua potable."], a: 1, e: "El cierre hidráulico bloquea el retorno de gases de las bajantes." },
+  { t: "Tema 10", q: "Al sellar la junta perimetral entre un lavabo de porcelana y el alicatado de un aseo público, ¿por qué se recomienda utilizar silicona NEUTRA antimoho frente a la silicona acética?", opts: ["Porque la silicona neutra no desprende ácido acético, no corroe superficies metálicas ni esmaltes delicados y ofrece excelente adherencia y resistencia al moho.", "Porque la silicona neutra se disuelve fácilmente con agua jabonosa.", "Porque la silicona acética solo sirve para madera exterior.", "Porque la silicona neutra tarda tres meses en secar."], a: 0, e: "La silicona neutra es inodora, no corrosiva y apta para todo tipo de materiales sanitarios." },
+  { t: "Tema 10", q: "En cerrajería y mantenimiento de puertas interiores, ¿qué es el 'resbalón' de una cerradura de embutir?", opts: ["El pasador rectangular accionado exclusivamente por la llave con varias vueltas.", "El pestillo biselado con muelle accionado por la manilla que permite cerrar la puerta de golpe sin usar llave.", "El embellecedor metálico exterior que rodea el bombín.", "La bisagra superior de la hoja."], a: 1, e: "El resbalón lleva bisel y muelle (manilla); el cerrojo o palanca es el bloque rectangular accionado por la llave." },
+  { t: "Tema 10", q: "Respecto a las puertas cortafuegos (EI2) instaladas en pasillos y escaleras protegidas de edificios públicos, el mantenimiento preventivo correcto exige:", opts: ["Colocar cuñas de madera debajo para mantenerlas abiertas todo el día.", "Verificar que el muelle cierrapuertas hidráulico cierra la hoja completamente por sí solo y mantenerlas siempre libres de obstáculos y sin cuñas.", "Retirar las juntas intumescentes del marco para que rocen menos.", "Cerrarlas con candado durante el horario de atención al público."], a: 1, e: "Una puerta cortafuegos bloqueada con cuñas pierde totalmente su función de sectorización en caso de incendio." },
+  { t: "Tema 11", q: "De acuerdo con el artículo 14 de la Ley 31/1995 de Prevención de Riesgos Laborales, el deber de protección del empresario o Administración Pública frente a los riesgos laborales constituye:", opts: ["Una recomendación voluntaria sujeta a disponibilidad presupuestaria.", "Un derecho correlativo de los trabajadores a una protección eficaz en materia de seguridad y salud en el trabajo.", "Una obligación exclusiva de los propios trabajadores subalternos.", "Una competencia delegada en las empresas suministradoras de material de oficina."], a: 1, e: "Art. 14.1 LPRL: Los trabajadores tienen derecho a una protección eficaz en materia de seguridad y salud en el trabajo." },
+  { t: "Tema 11", q: "Según la Guía Técnica del INSST sobre manipulación manual de cargas (RD 487/1997), como referencia general, ¿cuál es el peso máximo que se recomienda no sobrepasar en condiciones ideales de levantamiento?", opts: ["15 kg.", "25 kg (15 kg en mujeres, jóvenes o mayores, o si se busca proteger al 95 % de la población).", "40 kg.", "50 kg."], a: 1, e: "25 kg como límite general en condiciones ideales; 15 kg como protección ampliada." },
+  { t: "Tema 11", q: "Al levantar manualmente una caja pesada desde el suelo (RD 487/1997), la técnica ergonómica segura consiste en:", opts: ["Mantener las piernas totalmente rectas y doblar la espalda hacia delante.", "Separar los pies para ampliar la base de sustentación, flexionar las rodillas manteniendo la espalda recta, pegar la carga al cuerpo y evitar girar el tronco mientras se sostiene el peso.", "Levantar la carga dando un tirón brusco con los brazos extendidos.", "Girar la cintura rápidamente hacia el lateral sin mover los pies."], a: 1, e: "Evita lesiones discales lumbares por flexión y torsión." },
+  { t: "Tema 11", q: "¿Por qué la humedad en manos, calzado o suelo agrava drásticamente el riesgo eléctrico en baja tensión?", opts: ["Porque aumenta la resistencia eléctrica del cuerpo humano.", "Porque reduce drásticamente la resistencia eléctrica de la piel humana, permitiendo el paso de una intensidad de corriente mucho mayor para una misma tensión.", "Porque convierte la corriente alterna en corriente continua.", "Porque impide que actúe el cable de toma de tierra."], a: 1, e: "Ley de Ohm (I = V/R): al bajar la resistencia R por humedad, sube peligrosamente la intensidad I." },
+  { t: "Tema 11", q: "En el uso de un extintor portátil ante un conato de incendio en un edificio municipal, la secuencia correcta de actuación es:", opts: ["Invertir el extintor boca abajo &rarr; quitar la anilla &rarr; apuntar a la punta superior de las llamas.", "Retirar el pasador o anilla de seguridad &rarr; realizar una breve descarga de prueba &rarr; aproximarse a favor del viento/corriente y dirigir el chorro en zigzag a la base de las llamas.", "Vaciar el extintor a diez metros de distancia apuntando al techo.", "Quitar el manómetro antes de presionar la válvula."], a: 1, e: "Atacar la base del combustible en zigzag corta la reacción en cadena del fuego." },
+  { t: "Tema 11", q: "En el Plan de Autoprotección de un edificio administrativo (RD 393/2007), ¿cuál es la misión principal del Equipo de Alarma y Evacuación (EAE), en el que suele integrarse el personal de conserjería?", opts: ["Extinción avanzada de incendios estructurales con equipos autónomos de respiración.", "Asegurar que se da la alarma, dirigir el flujo de evacuación hacia las salidas asignadas, comprobar que no queda nadie en aseos o despachos y controlar el recuento en el Punto de Reunión.", "Realizar intervenciones quirúrgicas de urgencia en el vestíbulo.", "Restablecer el suministro eléctrico en alta tensión."], a: 1, e: "Funciones propias del EAE frente al EPI (Equipo de Primera Intervención) y EPA (Primeros Auxilios)." },
+  { t: "Tema 11", q: "Si durante una evacuación por incendio el humo invade el pasillo de salida de un edificio público, ¿cómo deben desplazarse los ocupantes hacia la salida de emergencia?", opts: ["Corriendo erguidos lo más rápido posible.", "Agachados o a ras de suelo, donde el aire es más fresco y contiene menos gases tóxicos.", "Utilizando el ascensor más cercano para bajar rápido.", "Abriendo todas las ventanas del pasillo para crear corriente."], a: 1, e: "El humo y los gases calientes ascienden acumulándose en la parte superior." },
+  { t: "Tema 11", q: "En la señalización de seguridad y salud en el trabajo (RD 485/1997), ¿qué color y forma tienen las señales de 'Salvamento o Socorro' (salidas de emergencia, punto de reunión, primeros auxilios)?", opts: ["Forma triangular con fondo amarillo y borde negro.", "Forma rectangular o cuadrada con pictograma blanco sobre fondo verde.", "Forma redonda con pictograma blanco sobre fondo azul.", "Forma cuadrada con pictograma blanco sobre fondo rojo."], a: 1, e: "Verde = salvamento/socorro; Rojo = lucha contra incendios/prohibición; Amarillo = advertencia; Azul = obligación." },
+  { t: "Tema 12", q: "Según el artículo 121 de la Ley 7/1985 (LBRL), el régimen de organización de los Municipios de Gran Población se aplica al Ayuntamiento de Huelva por cumplir el requisito de:", opts: ["Ser municipio con población superior a 250.000 habitantes.", "Ser capital de provincia cuya población sea superior a 75.000 habitantes.", "Ser municipio insular con cabildo propio.", "Tener una superficie superior a 1.000 kilómetros cuadrados."], a: 1, e: "Art. 121.1.b LBRL: Municipios que sean capitales de provincia cuya población sea superior a 75.000 habitantes." },
+  { t: "Tema 12", q: "En el Ayuntamiento de Huelva, ¿quién nombra y separa libremente a los Tenientes de Alcalde y de entre qué miembros debe designarlos?", opts: ["El Pleno Municipal, de entre cualquier vecino empadronado.", "El Alcalde, de entre los concejales que formen parte de la Junta de Gobierno Local.", "La Junta de Andalucía, a propuesta del Delegado del Gobierno.", "El Secretario General del Pleno, por orden de edad."], a: 1, e: "Art. 125.1 LBRL: El Alcalde nombra y separa libremente a los Tenientes de Alcalde de entre los miembros de la Junta de Gobierno Local." },
+  { t: "Tema 12", q: "¿Qué entidad instrumental municipal gestiona el ciclo integral del agua (abastecimiento de agua potable y alcantarillado/saneamiento) en la ciudad de Huelva?", opts: ["EMTUSA.", "Empresa Municipal de Aguas de Huelva, S.A. (Aguas de Huelva).", "Huelva Digital TDTL, S.A.", "Huelva Deporte, S.L."], a: 1, e: "Aguas de Huelva gestiona el abastecimiento y saneamiento en la capital." },
+  { t: "Tema 12", q: "¿Cuál es el objeto social de la Empresa Municipal de Limpieza de Colegios y Dependencias Municipales (EMLICODEMSA)?", opts: ["La limpieza de los colegios públicos y de las dependencias municipales.", "La gestión del transporte urbano en autobús.", "La emisión de la televisión digital terrestre local.", "La promoción de instalaciones deportivas."], a: 0, e: "EMLICODEMSA presta servicios de limpieza y accesorios en colegios públicos y dependencias municipales." },
+  { t: "Tema 12", q: "En la red de instalaciones deportivas municipales de Huelva, el Palacio de Deportes 'Carolina Marín' y el Polideportivo 'Andrés Estrada' dependen del área municipal de Deportes, apoyada por la sociedad:", opts: ["EMTUSA.", "Huelva Deporte, S.L.", "Aguas de Huelva, S.A.", "EMLICODEMSA."], a: 1, e: "Huelva Deporte, S.L. es la sociedad municipal de promoción deportiva." },
+  { t: "Tema 12", q: "¿Dónde se encuentra ubicado el edificio emblemático de la 'Casa Colón' del Ayuntamiento de Huelva, sede de congresos, exposiciones y del Festival de Cine Iberoamericano?", opts: ["En la Plaza de la Constitución, s/n.", "En la Plaza del Punto, s/n.", "En la Calle Vázquez López, s/n.", "En la Avenida de Andalucía, s/n."], a: 1, e: "Casa Colón: Plaza del Punto; Casa Consistorial: Plaza de la Constitución; Gran Teatro: C/ Vázquez López." },
+  { t: "Tema 12", q: "En el Ayuntamiento de Huelva, ¿cuál de los siguientes órganos tiene la consideración de 'órgano directivo' municipal conforme al artículo 130 de la LBRL?", opts: ["El Pleno Municipal.", "El Interventor General Municipal y el Titular de la Asesoría Jurídica.", "Los Grupos Políticos Municipales.", "El Consejo Social de la Ciudad."], a: 1, e: "Art. 130.1.B LBRL enumera los órganos directivos (Coordinadores/Directores Generales, Secretario General del Pleno, Interventor, Asesoría Jurídica, etc.)." },
+  { t: "Tema 12", q: "Según el artículo 122.4 de la Ley 7/1985 (LBRL), en los Municipios de Gran Población como Huelva, el Pleno contará con comisiones formadas por los miembros que designen los grupos políticos en proporción al número de concejales que tengan en el Pleno, correspondiéndoles entre otras funciones:", opts: ["La ejecución directa de las obras de pavimentación.", "El estudio, informe o consulta de los asuntos que hayan de ser sometidos a la decisión del Pleno.", "El nombramiento de los funcionarios interinos de conserjería.", "La recaudación ejecutiva de las tasas municipales."], a: 1, e: "Art. 122.4.a LBRL define la función consultiva y de dictamen previo de las Comisiones del Pleno." },
+  {"t": "Tema 4", "q": "¿Cuál de estas tareas queda fuera de las funciones del Portero/a-Mantenedor/a?", "opts": ["Reformar la instalación eléctrica general del edificio.", "Reponer consumibles como papel, jabón o tóner.", "Franquear y cerrar la correspondencia del centro.", "Manejar la calefacción y el aire acondicionado."], "a": 0, "e": "Solo realiza tareas sencillas; las que exigen cualificación especial se comunican al superior."},
+  {"t": "Tema 4", "q": "La figura tradicional vinculada a citaciones, notificaciones y protocolo en la Casa Consistorial es:", "opts": ["El alguacil.", "El ordenanza.", "El conserje.", "El mantenedor."], "a": 0, "e": "El alguacil: citaciones, notificaciones, custodia de la Casa Consistorial y protocolo."},
+  {"t": "Tema 5", "q": "Ante una persona alterada que se queja en el mostrador, lo más adecuado es:", "opts": ["Mantener la calma, escucharla sin discutir y derivarla a quien pueda resolver.", "Responder con firmeza para que no alce más la voz.", "Indicarle que vuelva otro día cuando esté más tranquila.", "Ofrecerle una solución inmediata aunque no sea competencia del puesto."], "a": 0, "e": "Autocontrol, escucha activa, empatía y derivación al responsable."},
+  {"t": "Tema 6", "q": "Las barras antipánico de las salidas de emergencia deben mantenerse:", "opts": ["Libres y operativas en todo momento.", "Cerradas con llave fuera del horario de apertura.", "Cubiertas para no alterar la decoración del edificio.", "Bloqueadas mientras la alarma esté activada."], "a": 0, "e": "En la apertura se comprueba que salidas y barras antipánico estén libres y operativas."},
+  {"t": "Tema 7", "q": "El sistema de «franqueo pagado» consiste en:", "opts": ["Usar un cajetín preimpreso en el sobre y presentar un albarán de depósito.", "Estampar importe y fecha tras pesar el envío con una máquina.", "Pagar el envío en destino cuando lo recibe el destinatario.", "Pegar sellos de curso legal en cada sobre depositado."], "a": 0, "e": "La máquina franqueadora estampa importe y fecha previo pesaje; el franqueo pagado usa cajetín y albarán."},
+  {"t": "Tema 8", "q": "Para destruir documentos con datos personales conviene una destructora de:", "opts": ["Corte en partículas o microcorte (nivel P-3/P-4 o superior).", "Corte en tiras anchas, que es la más rápida.", "Cualquier tipo, siempre que se retiren los clips.", "Corte en tiras de 6 mm de ancho como mínimo."], "a": 0, "e": "Para datos personales: partículas o microcorte P-3/P-4 o superior."},
+  {"t": "Tema 9", "q": "En un proyector, la corrección trapezoidal (keystone) sirve para:", "opts": ["Corregir la deformación en trapecio de la imagen por la inclinación.", "Ajustar el enfoque de la imagen sobre la pantalla de proyección.", "Aumentar el brillo de la lámpara en salas con mucha luz ambiente.", "Cambiar la fuente de entrada de vídeo entre HDMI y VGA."], "a": 0, "e": "Keystone corrige la deformación trapezoidal; focus enfoca."},
+  {"t": "Tema 10", "q": "Si un radiador está frío en la parte alta, la actuación básica es:", "opts": ["Purgar el aire abriendo la válvula superior hasta que salga agua continua.", "Cerrar la llave de paso y vaciar todo el circuito de calefacción.", "Subir la presión de la caldera hasta el máximo permitido por el manómetro.", "Sustituir el radiador por otro de mayor tamaño y potencia."], "a": 0, "e": "La purga elimina el aire acumulado en la parte alta."},
+  {"t": "Tema 11", "q": "Al usar una escalera de tijera hay que:", "opts": ["Abrirla del todo con el tensor bloqueado y no pisar los dos últimos peldaños.", "Usarla plegada y apoyada en la pared como si fuera una escalera simple.", "Pisar el último peldaño con un pie a cada lado para ganar alcance.", "Dejar el tensor flojo para poder plegarla con rapidez al terminar."], "a": 0, "e": "RD 2177/2004."},
+  {"t": "Tema 3", "q": "Según el artículo 22 de la LOPDGDD, las imágenes de videovigilancia deben suprimirse como máximo en:", "opts": ["Un mes desde su captación.", "Una semana desde su captación.", "Tres meses desde su captación.", "Un año desde su captación."], "a": 0, "e": "Un mes, salvo conservación para acreditar delitos o infracciones."},
+  {"t": "Tema 1", "q": "¿Cuál es la capital del Estado según el artículo 5 de la Constitución?", "opts": ["La villa de Madrid.", "La ciudad de Madrid, sede de las Cortes.", "La que fije una ley orgánica de capitalidad.", "La sede del Gobierno en cada legislatura."], "a": 0, "e": "Art. 5 CE: la capital del Estado es la villa de Madrid.", "r": 1},
+  {"t": "Tema 2", "q": "Planteada la recusación, el superior jerárquico resuelve en el plazo de:", "opts": ["Tres días.", "Un día.", "Diez días.", "Un mes."], "a": 0, "e": "Art. 24 Ley 40/2015: el recusado contesta al día siguiente y el superior resuelve en 3 días.", "r": 1},
+  {"t": "Tema 12", "q": "¿Qué órgano municipal ejecutivo y colegiado aprueba la OEP y las bases de selección?", "opts": ["La Junta de Gobierno Local.", "El Pleno municipal.", "La Alcaldía en solitario.", "Una Comisión informativa."], "a": 0, "e": "La JGL aprobó estas mismas bases el 13 de octubre de 2026.", "r": 1},
+  {"t": "Tema 9", "q": "El conector balanceado profesional habitual en micrófonos es:", "opts": ["XLR (Canon).", "RCA.", "Jack de 3,5 mm estéreo.", "HDMI."], "a": 0, "e": "Conector balanceado: XLR.", "r": 1},
+  {"t": "Tema 6", "q": "Ante un atrapamiento en el ascensor, el conserje debe:", "opts": ["Tranquilizar por interfono y avisar a la empresa mantenedora o a bomberos.", "Forzar las puertas con una palanca para sacar cuanto antes a la persona.", "Manipular la maquinaria desde el cuarto de máquinas para bajar la cabina.", "Esperar a que la persona atrapada se las arregle sola sin intervenir."], "a": 0, "e": "Nunca forzar puertas ni manipular la maquinaria.", "r": 1}
+];
+
+// Baraja las opciones en cada intento (la correcta deja de estar casi siempre en la B)
+QUESTIONS.forEach(function (it) {
+  var correct = it.opts[it.a];
+  for (var i = it.opts.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = it.opts[i]; it.opts[i] = it.opts[j]; it.opts[j] = t;
+  }
+  it.a = it.opts.indexOf(correct);
+});
+
+
+const NMAIN = QUESTIONS.filter(function (x) { return !x.r; }).length;
+let answers = {};
+let graded = false;
+let secondsLeft = 60 * 60;
+let timerInterval = null;
+
+function shuffleCounts() {
+  var n = NMAIN;
+  var c = document.getElementById('answeredCount'); if (c) c.textContent = '0 / ' + n;
+  document.querySelectorAll('.nQ').forEach(function (el) { el.textContent = n; });
+}
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  const letters = ['A', 'B', 'C', 'D'];
+  container.innerHTML = QUESTIONS.map((item, idx) => `
+    <div class="q-card" id="qcard-${idx}" data-status="blank">
+      <div class="q-meta">
+        <span>${item.r ? 'RESERVA ' + (idx + 1 - NMAIN) + ' DE ' + (QUESTIONS.length - NMAIN) : 'PREGUNTA ' + (idx + 1) + ' DE ' + NMAIN}</span>
+        <span class="q-badge">${item.t}</span>
+      </div>
+      <div class="q-text">${item.r ? 'R' + (idx + 1 - NMAIN) : (idx + 1)}. ${item.q}</div>
+      <div class="opts">
+        ${item.opts.map((opt, oIdx) => `
+          <div class="opt" id="opt-${idx}-${oIdx}" onclick="chooseOpt(${idx}, ${oIdx})">
+            <strong>${letters[oIdx]})</strong>
+            <span>${opt}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="exp" id="exp-${idx}"><strong>Fundamento / Explicación:</strong> ${item.e}</div>
+    </div>
+  `).join('');
+}
+
+function chooseOpt(qIdx, oIdx) {
+  if (graded) return;
+  if (answers[qIdx] === oIdx) {
+    delete answers[qIdx];
+  } else {
+    answers[qIdx] = oIdx;
+  }
+  document.querySelectorAll(`#qcard-${qIdx} .opt`).forEach((el, i) => {
+    el.classList.toggle('selected', answers[qIdx] === i);
+  });
+  document.getElementById('answeredCount').textContent = `${Object.keys(answers).filter(k => !QUESTIONS[k].r).length} / ${NMAIN}`;
+}
+
+function gradeExam() {
+  if (graded) return;
+  graded = true;
+  clearInterval(timerInterval);
+
+  let ok = 0, fail = 0, blank = 0;
+  QUESTIONS.forEach((item, idx) => {
+    const chosen = answers[idx];
+    const card = document.getElementById(`qcard-${idx}`);
+    document.getElementById(`opt-${idx}-${item.a}`).classList.add('correct');
+
+    if (chosen === undefined) {
+      if (!item.r) blank++;
+      card.dataset.status = 'blank';
+    } else if (chosen === item.a) {
+      if (!item.r) ok++;
+      card.dataset.status = 'ok';
+    } else {
+      if (!item.r) fail++;
+      card.dataset.status = 'wrong';
+      document.getElementById(`opt-${idx}-${chosen}`).classList.add('wrong');
+    }
+    document.getElementById(`exp-${idx}`).classList.add('show');
+  });
+
+  const rawScore = (ok * 0.10) - (fail * 0.025);
+  const finalScore = Math.max(0, rawScore);
+  const elapsed = (60 * 60) - secondsLeft;
+  const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const secs = String(elapsed % 60).padStart(2, '0');
+
+  document.getElementById('finalScore').textContent = `${finalScore.toFixed(3).replace('.', ',')} pts`;
+  const statusEl = document.getElementById('passStatus');
+  if (finalScore >= 5.0) {
+    statusEl.textContent = '✔ APTO (Supera la nota de corte de 5,00 puntos)';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    statusEl.textContent = '✘ NO APTO (No alcanza los 5,00 puntos mínimos)';
+    statusEl.style.color = 'var(--danger)';
+  }
+
+  document.getElementById('resOk').textContent = ok;
+  document.getElementById('resFail').textContent = fail;
+  document.getElementById('resBlank').textContent = blank;
+  document.getElementById('resTime').textContent = `${mins}:${secs}`;
+  document.getElementById('resultsPanel').classList.add('show');
+  document.getElementById('gradeBtnTop').disabled = true;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterQuestions(mode) {
+  QUESTIONS.forEach((_, idx) => {
+    const card = document.getElementById(`qcard-${idx}`);
+    if (mode === 'all') card.style.display = 'block';
+    else card.style.display = (card.dataset.status === mode) ? 'block' : 'none';
+  });
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+    const s = String(secondsLeft % 60).padStart(2, '0');
+    const el = document.getElementById('timerDisplay');
+    el.textContent = `${m}:${s}`;
+    if (secondsLeft <= 300) el.classList.add('low');
+    if (secondsLeft <= 0) gradeExam();
+  }, 1000);
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('huelva_pm_theme', isDark ? 'light' : 'dark');
+}
+
+if (localStorage.getItem('huelva_pm_theme') === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.getElementById('themeBtn').textContent = '☀️';
+}
+
+
+function showStartOverlay(title, info, onStart, isActive) {
+  var ov = document.createElement('div');
+  ov.id = 'startOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg,#f1f5f9);color:var(--text,#0f172a);display:flex;align-items:center;justify-content:center;padding:1.5rem;text-align:center;';
+  ov.innerHTML = '<div style="max-width:460px"><h2 style="font-size:1.4rem;margin-bottom:.6rem">' + title + '</h2>' +
+    '<p style="margin-bottom:1.4rem;opacity:.85">' + info + '</p>' +
+    '<button class="btn btn-primary" id="startBtn" style="padding:.8rem 2rem;font-size:1.05rem;cursor:pointer">Comenzar</button>' +
+    '<p style="margin-top:1.2rem"><a href="test.html" style="color:inherit;opacity:.8">&larr; Volver a ejercicios</a></p></div>';
+  document.body.appendChild(ov);
+  document.getElementById('startBtn').onclick = function () { ov.remove(); onStart(); };
+  window.addEventListener('beforeunload', function (e) {
+    if (!document.getElementById('startOverlay') && isActive()) { e.preventDefault(); e.returnValue = ''; }
+  });
+}
+
+renderQuestions();
+shuffleCounts();
+showStartOverlay(document.title.split(' — ')[0], NMAIN + ' preguntas (+' + (QUESTIONS.length - NMAIN) + ' de reserva) · ' + 60 + ' minutos · +0,10 acierto / −0,025 fallo. El cronómetro empieza al pulsar Comenzar.', startTimer, function () { return !graded; });
+</script>
+</body>
+</html>

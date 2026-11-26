@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La convocatoria — Portero/a-Mantenedor/a Ayto. Huelva</title>
+<style>
+  :root { --bg:#f1f5f9; --surface:#fff; --surface-alt:#f8fafc; --text:#0f172a; --text-muted:#475569; --border:#e2e8f0; --primary:#004b87; --primary-light:#e0f2fe; --accent:#0284c7; --teal:#0f766e; --teal-light:#ccfbf1; --amber:#92400e; --amber-light:#fef3c7; --shadow:0 8px 25px -5px rgba(15,23,42,.08); }
+  [data-theme="dark"] { --bg:#0b1120; --surface:#111827; --surface-alt:#1e293b; --text:#f1f5f9; --text-muted:#94a3b8; --border:#1e293b; --primary:#38bdf8; --primary-light:rgba(56,189,248,.14); --accent:#7dd3fc; --teal:#2dd4bf; --teal-light:rgba(45,212,191,.14); --amber:#fcd34d; --amber-light:rgba(252,211,77,.12); --shadow:0 8px 25px -5px rgba(0,0,0,.45); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; transition:background .2s,color .2s; }
+  .topbar { position:sticky; top:0; height:62px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 1.25rem; z-index:100; }
+  .nav-left { display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+  .btn-nav { text-decoration:none; background:var(--surface-alt); border:1px solid var(--border); color:var(--text); padding:.42rem .8rem; border-radius:8px; font-size:.84rem; font-weight:600; cursor:pointer; font-family:inherit; }
+  .btn-nav:hover { border-color:var(--accent); color:var(--primary); }
+  .page-header { background:linear-gradient(135deg,#003366 0%,#004b87 55%,#0284c7 100%); color:#fff; padding:2.5rem 1.25rem 3.4rem; text-align:center; }
+  .page-header h1 { font-size:1.8rem; font-weight:800; margin-bottom:.45rem; }
+  .page-header p { font-size:.96rem; opacity:.92; max-width:680px; margin:0 auto; }
+  .container { max-width:960px; margin:-1.75rem auto 3rem; padding:0 1.25rem; }
+  .specs { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.75rem; margin-bottom:1.5rem; }
+  .spec { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.9rem; text-align:center; box-shadow:var(--shadow); }
+  .spec strong { display:block; font-size:1.35rem; color:var(--primary); }
+  .spec span { font-size:.76rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em; font-weight:600; }
+  .card { background:var(--surface); border:1px solid var(--border); border-left:5px solid var(--primary); border-radius:12px; padding:1.25rem 1.4rem; margin-bottom:1.25rem; box-shadow:var(--shadow); }
+  .card.teal { border-left-color:var(--teal); } .card.amber { border-left-color:#d97706; }
+  .card h2 { font-size:1.15rem; color:var(--primary); margin-bottom:.65rem; }
+  .card.teal h2 { color:var(--teal); } .card.amber h2 { color:var(--amber); }
+  .card h3 { font-size:.98rem; margin:.9rem 0 .3rem; }
+  .card ul { padding-left:1.2rem; } .card li { margin:.25rem 0; }
+  .card p { margin:.4rem 0; }
+  table { width:100%; border-collapse:collapse; margin:.6rem 0; font-size:.9rem; }
+  th,td { border:1px solid var(--border); padding:.45rem .6rem; text-align:left; vertical-align:top; }
+  th { background:var(--surface-alt); }
+  .scroll { overflow-x:auto; }
+  .tag { display:inline-block; background:var(--primary-light); color:var(--primary); font-size:.74rem; font-weight:700; padding:.15rem .6rem; border-radius:999px; }
+  .note { background:var(--amber-light); border-radius:8px; padding:.65rem .9rem; margin:.7rem 0; font-size:.9rem; }
+  .src { font-size:.8rem; color:var(--text-muted); text-align:center; margin-top:1.5rem; }
+  @media (max-width:600px){ .page-header h1{font-size:1.45rem;} .brand{display:none;} }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="nav-left">
+    <a href="index.html" class="btn-nav">&larr; Inicio</a>
+    <a href="Temario_Portero_Mantenedor_Huelva.html" class="btn-nav">📚 Temario</a>
+    <a href="test.html" class="btn-nav">📝 Ejercicios</a>
+    <a href="Calculadora_Portero_Huelva.html" class="btn-nav">🧮 Calculadora</a>
+  </div>
+  <button class="btn-nav" id="themeBtn" onclick="toggleTheme()">🌙 Oscuro</button>
+</header>
+
+<section class="page-header">
+  <h1>La convocatoria, explicada</h1>
+  <p>Resumen de las bases específicas publicadas en el BOP de Huelva (n.º 226/26, 24 de noviembre de 2026). Úsalo para estudiar, pero las bases oficiales son lo único que vale.</p>
+</section>
+
+<main class="container">
+
+  <div class="specs">
+    <div class="spec"><strong>6</strong><span>Plazas · turno libre</span></div>
+    <div class="spec"><strong>13 pts</strong><span>Máximo final</span></div>
+    <div class="spec"><strong>100 + 5</strong><span>Preguntas + reserva</span></div>
+    <div class="spec"><strong>1 hora</strong><span>Duración del test</span></div>
+    <div class="spec"><strong>5,00</strong><span>Mínimo en el test</span></div>
+  </div>
+
+  <section class="card">
+    <h2>1. Datos generales</h2>
+    <ul>
+      <li><strong>Plaza:</strong> Portero/a-Mantenedor/a, funcionario/a de carrera. 6 plazas, turno libre, OEP 2023-2024-2025.</li>
+      <li><strong>Clasificación:</strong> Escala de Administración Especial, Subescala Subalterno, Grupo AP.</li>
+      <li><strong>Sistema:</strong> concurso-oposición. La oposición es la fase predominante y eliminatoria.</li>
+      <li><strong>Acuerdo:</strong> Junta de Gobierno Local, sesión del 13 de octubre de 2026.</li>
+      <li><strong>Normas supletorias:</strong> Bases Generales del Ayuntamiento de Huelva (BOP del 17 de octubre de 2024) y su modificación (BOP del 30 de abril de 2026).</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>2. Requisitos</h2>
+    <ul>
+      <li><strong>Nacionalidad:</strong> española o de un Estado miembro de la UE, o cónyuge/descendiente en los términos del art. 57 del TREBEP, o incluida en los tratados internacionales sobre libre circulación de trabajadores.</li>
+      <li><strong>Edad:</strong> 16 años cumplidos y no exceder la edad máxima de jubilación forzosa.</li>
+      <li><strong>Capacidad funcional</strong> para las tareas de la plaza.</li>
+      <li><strong>No haber sido separado/a</strong> mediante expediente disciplinario de ninguna Administración, ni estar inhabilitado/a para empleos o cargos públicos.</li>
+      <li><strong>Tasa:</strong> haber abonado los derechos de examen.</li>
+    </ul>
+    <div class="note">Estas bases específicas no mencionan una titulación mínima. Comprueba en las Bases Generales (BOP del 17/10/2024 y 30/04/2026) si exigen alguna.</div>
+  </section>
+
+  <section class="card">
+    <h2>3. Derechos de examen</h2>
+    <div class="scroll"><table>
+      <tr><th>Tarifa</th><th>Importe</th><th>Condición</th></tr>
+      <tr><td>General</td><td>60 €</td><td>—</td></tr>
+      <tr><td>Reducida</td><td>54 €</td><td>Solicitud y pago por vía telemática, con el método del Ayuntamiento</td></tr>
+      <tr><td>Bonificación del 50 %</td><td>—</td><td>Discapacidad ≥ 33 %; demandante de empleo al menos 3 meses antes de la fecha de la convocatoria; familia numerosa</td></tr>
+    </table></div>
+    <p>Las bonificaciones no son acumulables entre sí. Se acreditan con el certificado de discapacidad vigente, el certificado de desempleo del servicio público de empleo o el título actualizado de familia numerosa.</p>
+  </section>
+
+  <section class="card teal">
+    <h2>4. Fase de oposición (máximo 10 puntos) <span class="tag">eliminatoria</span></h2>
+    <h3>Ejercicio teórico-práctico (test)</h3>
+    <ul>
+      <li>Examen tipo test sobre el temario (Anexo I) diseñado por el Tribunal. <strong>100 preguntas</strong> con 4 opciones y una sola correcta, <strong>más 5 de reserva</strong>.</li>
+      <li><strong>Tiempo:</strong> una hora. <strong>Acierto:</strong> +0,10. <strong>Cada 4 errores restan 1 acierto</strong> (−0,025 por error). Las respuestas en blanco no penalizan.</li>
+      <li>Se califica de 0 a 10 y hay que sacar <strong>al menos 5</strong> para no quedar eliminado/a.</li>
+      <li><strong>Llamamiento único:</strong> hay que acudir con el DNI original o documento acreditativo. Quien no se presente pierde sus derechos, salvo fuerza mayor justificada y apreciada libremente por el Tribunal.</li>
+    </ul>
+    <h3>Cómo se llega al 5</h3>
+    <p>Aprobar equivale a que <strong>aciertos − errores ÷ 4 ≥ 50</strong>. Ejemplos:</p>
+    <div class="scroll"><table>
+      <tr><th>Aciertos</th><th>Errores</th><th>En blanco</th><th>Nota</th></tr>
+      <tr><td>60</td><td>40</td><td>0</td><td>5,00</td></tr>
+      <tr><td>50</td><td>0</td><td>50</td><td>5,00</td></tr>
+      <tr><td>55</td><td>10</td><td>35</td><td>5,25</td></tr>
+      <tr><td>60</td><td>20</td><td>20</td><td>5,50</td></tr>
+      <tr><td>70</td><td>30</td><td>0</td><td>6,25</td></tr>
+      <tr><td>80</td><td>20</td><td>0</td><td>7,50</td></tr>
+      <tr><td>45</td><td>20</td><td>35</td><td>4,00 (eliminado/a)</td></tr>
+    </table></div>
+    <p>Responder al azar entre 4 opciones tiene un valor esperado ligeramente positivo, y mejora mucho si puedes descartar una opción. Es un criterio orientativo, no una recomendación.</p>
+
+    <h3>Prueba psicotécnica <span class="tag">apto / no apto</span></h3>
+    <ul>
+      <li>Valora el perfil de Portero/a-Mantenedor/a. No suma puntos, pero <strong>hay que ser apto/a para superar el ejercicio</strong>.</li>
+      <li><strong>Primera fase (test):</strong> aptitudes intelectuales y actitudes de personalidad.
+        <ul>
+          <li><em>Aptitudes:</em> inteligencia general, comprensión y fluidez verbal, comprensión de textos, razonamiento lógico, rapidez y destreza perceptivo-motora, atención y resistencia a la fatiga, memoria, aptitud numérica, espacial y mecánica. Se exige un rendimiento igual o superior al normal de la población general.</li>
+          <li><em>Personalidad:</em> se valoran factores como agresividad u hostilidad, vulnerabilidad al estrés, adaptación a normas y autoridad, responsabilidad, autocontrol, estabilidad emocional, iniciativa, asertividad, motivación, sentido del deber, trabajo en equipo y sinceridad.</li>
+        </ul>
+      </li>
+      <li><strong>Segunda fase (entrevista):</strong> profundiza en los factores del test y explora otros aspectos como trastornos de la personalidad, consumo excesivo de alcohol u otras drogas y motivación profesional.</li>
+      <li>Una empresa especializada entrega al Tribunal un informe con la propuesta de aptos y no aptos y asiste al Tribunal hasta que acaba el ejercicio.</li>
+    </ul>
+    <div class="note">Consejo orientativo (no figura en las bases): en las pruebas de personalidad no hay respuestas «brillantes». Responde con coherencia y sinceridad, porque algunas pruebas incluyen escalas que detectan incoherencias.</div>
+  </section>
+
+  <section class="card amber">
+    <h2>5. Fase de concurso (máximo 3 puntos)</h2>
+    <p>Se valoran los méritos alegados y acreditados <strong>hasta la fecha en que acabe el plazo de presentación de solicitudes</strong>, según el «Autobaremo de Méritos» (Anexo II). Lo que no esté en el autobaremo o no se acredite documentalmente en el plazo no se valora. El autobaremo vincula al Tribunal, que no puede dar más puntos de los que te asignes, salvo errores materiales, aritméticos o de hecho.</p>
+    <h3>A. Experiencia profesional (máximo 2 puntos)</h3>
+    <div class="scroll"><table>
+      <tr><th>Supuesto</th><th>Puntuación</th></tr>
+      <tr><td>Mes completo en la Administración Local, en plaza de igual nivel y naturaleza</td><td>0,15 por mes</td></tr>
+      <tr><td>Mes completo en otras Administraciones Públicas, en plaza de igual nivel y naturaleza</td><td>0,10 por mes</td></tr>
+    </table></div>
+    <p>Se acredita con certificación de servicios prestados de la Administración correspondiente. Ejemplo: 12 meses en la Administración Local son 1,80 puntos. Con 14 meses llegarías a 2,10, pero el tope es 2.</p>
+    <h3>B. Méritos académicos (máximo 1 punto)</h3>
+    <ul>
+      <li><strong>Cursos de formación y perfeccionamiento:</strong> 0,01 por hora, con un máximo de <strong>1 punto por cada acción formativa</strong>. No se valoran los de menos de <strong>20 horas</strong>, los que no acrediten sus horas ni los derivados de procesos selectivos. 1 crédito ECTS equivale a 10 horas.
+        <ul>
+          <li>Deben estar impartidos u homologados por el Ayuntamiento de Huelva, el INAP, el IAAP, la FEMP, la FAMP, universidades, federaciones deportivas, organizaciones sindicales (en el marco del Acuerdo de Formación Continua o presentes en la Mesa General de Negociación), colegios profesionales, o centros y entidades acogidos al Plan de Formación Continua de las Administraciones Públicas.</li>
+          <li>Han de relacionarse con las funciones de la plaza o con materias transversales: administración local, prevención de riesgos laborales, igualdad, prevención de violencia de género, lengua de signos, técnicas de comunicación, función pública, trabajo en equipo, transparencia, protección de datos, idiomas, informática y ofimática, procedimiento administrativo, calidad de los servicios y administración electrónica.</li>
+          <li>No cuentan los cursos usados para cumplir un requisito de acceso. Se acreditan con copia del título.</li>
+        </ul>
+      </li>
+      <li><strong>Titulaciones:</strong> 0,50 por cada titulación académica oficial igual o superior y distinta a la exigida para la plaza; 0,25 por cada máster oficial universitario.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>6. Calificación final y desempate</h2>
+    <ul>
+      <li><strong>Puntuación final:</strong> oposición (hasta 10) + concurso (hasta 3) = <strong>máximo 13 puntos</strong>. La psicotécnica solo es apto/no apto.</li>
+      <li><strong>Publicidad:</strong> las calificaciones de cada ejercicio se exponen en el Tablón de Edictos y en www.huelva.es.</li>
+      <li><strong>Desempate (por este orden):</strong> 1) mayor puntuación en la fase de oposición; 2) mayor puntuación en los apartados del concurso, primero experiencia y después méritos académicos; 3) sorteo público.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>7. Bolsa de trabajo</h2>
+    <ul>
+      <li>La forman las personas que no obtengan plaza y hayan <strong>superado al menos un ejercicio</strong>, ordenadas por ejercicios superados y puntuación.</li>
+      <li>Deja sin efecto cualquier otra bolsa anterior de la misma categoría.</li>
+      <li><strong>Vigencia:</strong> hasta que se ejecute la Oferta de Empleo Público, hasta que se constituya otra bolsa de la misma categoría o, como máximo, <strong>5 años</strong> desde su constitución definitiva.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>8. Recursos contra las bases</h2>
+    <p>Las bases agotan la vía administrativa. Cabe <strong>recurso de reposición</strong> potestativo en <strong>1 mes</strong> ante la Junta de Gobierno Local, o <strong>recurso contencioso-administrativo</strong> en <strong>2 meses</strong> ante la sección de lo Contencioso-Administrativo del Tribunal de Instancia de Huelva. Ambos plazos se cuentan desde el día siguiente a la publicación en el BOP y no pueden simultanearse.</p>
+  </section>
+
+  <section class="card amber">
+    <h2>9. Lo que este anuncio NO dice</h2>
+    <ul>
+      <li>El <strong>plazo de presentación de solicitudes</strong>: las bases remiten a la publicación de la convocatoria en el BOE.</li>
+      <li>La <strong>fecha y el lugar del examen</strong> ni la composición del Tribunal.</li>
+      <li>El <strong>orden</strong> en que se harán el test y la prueba psicotécnica.</li>
+      <li>Cómo se ponderan los temas dentro de las 100 preguntas.</li>
+    </ul>
+    <p>Consulta www.huelva.es y el BOE para esos datos.</p>
+  </section>
+
+  <p class="src">Fuente: Anuncio del Ayuntamiento de Huelva, BOP de Huelva n.º 226/26, de 24/11/2026.</p>
+</main>
+
+<script>
+  function toggleTheme() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = dark ? '🌙 Oscuro' : '☀️ Claro';
+    try { localStorage.setItem('huelva_pm_theme', dark ? 'light' : 'dark'); } catch (e) {}
+  }
+  try {
+    if (localStorage.getItem('huelva_pm_theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('themeBtn').textContent = '☀️ Claro';
+    }
+  } catch (e) {}
+</script>
+</body>
+</html>
