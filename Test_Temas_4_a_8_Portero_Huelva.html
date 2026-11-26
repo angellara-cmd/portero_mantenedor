@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Temas 4 a 8 - Portero/a-Mantenedor/a Ayto. Huelva</title>
+<style>
+  :root {
+    --primary: #004b87;
+    --primary-light: #e6f0fa;
+    --accent: #0077c8;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+    --warn: #b45309;
+    --warn-bg: #fef3c7;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #cbd5e1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+  header {
+    background: var(--primary);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  header h1 {
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 700;
+  }
+  header .sub {
+    font-size: 0.82rem;
+    opacity: 0.9;
+  }
+  .hud {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .badge {
+    background: rgba(255,255,255,0.18);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+  }
+  .timer-warn { background: #dc2626 !important; animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity: 0.7; } }
+  .container {
+    max-width: 900px;
+    margin: 1.5rem auto;
+    padding: 0 1rem 4rem;
+  }
+  .rules-box {
+    background: var(--card);
+    border-left: 5px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    font-size: 0.9rem;
+  }
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .q-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .q-tema {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+  }
+  .q-text {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.9rem;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: #fff;
+  }
+  .option:hover { background: #f8fafc; border-color: var(--accent); }
+  .option.selected { background: var(--primary-light); border-color: var(--primary); font-weight: 500; }
+  .option.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: #14532d; }
+  .option.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: #7f1d1d; }
+  .option input { margin-top: 0.25rem; accent-color: var(--primary); }
+  .explanation {
+    margin-top: 0.85rem;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    font-size: 0.88rem;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.98rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  button:hover { opacity: 0.92; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-secondary { background: #475569; color: #fff; }
+  .btn-outline { background: #fff; color: var(--primary); border: 2px solid var(--primary); }
+  .results-panel {
+    display: none;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    border-top: 6px solid var(--primary);
+  }
+  .results-panel.show { display: block; }
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.85rem;
+    margin: 1rem 0;
+  }
+  .stat-box {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+  }
+  .stat-val { font-size: 1.4rem; font-weight: 800; }
+  .stat-lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; }
+  .status-banner {
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    text-align: center;
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+  }
+  .apto { background: var(--success-bg); color: var(--success); }
+  .no-apto { background: var(--danger-bg); color: var(--danger); }
+  .filter-bar {
+    display: none;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .filter-bar.show { display: flex; }
+  .filter-btn { padding: 0.45rem 0.9rem; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Ayto. Huelva — Portero/a-Mantenedor/a (Bloque Temas 4 a 8)</h1>
+    <div class="sub">30 preguntas · 4 alternativas · Penalización 4:1 · Tiempo real: 18 min</div>
+  </div>
+  <div class="hud">
+    <a href="test.html" class="badge" style="text-decoration:none">&larr; Ejercicios</a>
+    <a href="index.html" class="badge" style="text-decoration:none">Inicio</a>
+    <span class="badge" id="answeredCount">Respondidas: 0 / 30</span>
+    <span class="badge" id="timer">18:00</span>
+  </div>
+</header>
+
+<div class="container">
+  <div class="rules-box">
+    <strong>Criterios de calificación (Bases BOP Huelva 24/11/2026):</strong> En el examen real cada acierto vale <strong>0,10</strong> y cada fallo resta <strong>0,025</strong> (4 fallos = 1 acierto). Aquí la nota se escala a 10 según el número de preguntas de este test (aciertos netos ÷ preguntas × 10). Las preguntas en blanco no penalizan. Para aprobar se requiere alcanzar <strong>5,00 sobre 10</strong>.
+  </div>
+
+  <div class="results-panel" id="resultsPanel">
+    <div class="status-banner" id="statusBanner"></div>
+    <div class="score-grid">
+      <div class="stat-box"><div class="stat-val" id="finalScore">0,00</div><div class="stat-lbl">Nota (sobre 10)</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--success)" id="statOk">0</div><div class="stat-lbl">Aciertos</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--danger)" id="statKo">0</div><div class="stat-lbl">Fallos</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--muted)" id="statBlank">0</div><div class="stat-lbl">En blanco</div></div>
+      <div class="stat-box"><div class="stat-val" id="statNet">0,00</div><div class="stat-lbl">Aciertos netos</div></div>
+    </div>
+    <div class="actions" style="margin-top:1rem;">
+      <button class="btn-outline" onclick="resetQuiz(true)">Repetir mezclando preguntas</button>
+      <button class="btn-secondary" onclick="resetQuiz(false)">Reiniciar mismo orden</button>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="btn-primary filter-btn" onclick="filterQuestions('all')">Ver todas (30)</button>
+    <button class="btn-secondary filter-btn" onclick="filterQuestions('wrong')">Solo falladas y en blanco</button>
+  </div>
+
+  <form id="quizForm"></form>
+
+  <div class="actions" id="bottomActions">
+    <button type="button" class="btn-primary" onclick="gradeQuiz()">Finalizar y Corregir Examen</button>
+  </div>
+</div>
+
+<script src="historial.js"></script>
+<script>
+const QUESTIONS_DATA = [
+  {"tema":"Tema 4 · Conserjería","q":"Según el art. 170 del RDL 781/1986 (TRRL) y el TREBEP, las plazas de Portero/a-Mantenedor/a en la Administración Local se encuadran en:","opts":["Escala de Administración General, Subescala Subalterna, Subgrupo C2.","Escala de Administración Especial, Subescala Subalterna, Grupo AP.","Escala de Administración Especial, Subescala Técnica, Grupo AP.","Escala de Administración General, Subescala Auxiliar, Grupo AP."],"ans":1,"exp":"Las bases especifican expresamente: Escala de Administración Especial, Subescala Subalterno, Grupo AP (Agrupaciones Profesionales, Disposición Adicional 6.ª TREBEP, sin exigencia de titulación)."},
+  {"tema":"Tema 4 · Conserjería","q":"¿Cuál es el límite funcional de las tareas de mantenimiento que debe ejecutar directamente un Portero/a-Mantenedor/a?","opts":["Cualquier reparación eléctrica o de fontanería del edificio, incluida la reforma de cuadros generales.","Únicamente tareas de limpieza y jardinería exterior.","Tareas sencillas de electricidad, carpintería, fontanería o jardinería que no requieran especial cualificación técnica, informando al superior de las que sí la requieran.","Solo las reparaciones que autorice por escrito el Alcalde."],"ans":2,"exp":"Conforme a la Base 1.ª, realiza tareas sencillas para cuyo desempeño no se requiera la presencia de un profesional especializado, informando a su superior o responsable del centro de aquellas que requieran especial cualificación."},
+  {"tema":"Tema 4 · Conserjería","q":"¿Qué figura histórica del ámbito municipal se caracteriza por ejercer funciones de notificación, citación, custodia de la Casa Consistorial y acompañamiento protocolario a la Corporación?","opts":["El Interventor municipal.","El Alguacil.","El Auxiliar de archivo.","El Técnico de administración general."],"ans":1,"exp":"El Alguacil es la figura subalterna tradicional vinculada a la Corporación y Alcaldía con cometidos de custodia, citaciones, notificaciones y protocolo institucional."},
+  {"tema":"Tema 4 · Conserjería","q":"Respecto a la documentación y expedientes que traslada o fotocopia el personal de conserjería, ¿qué deber ético del TREBEP resulta directamente aplicable?","opts":["El derecho a conservar copia personal de los expedientes tramitados.","El deber de sigilo y confidencialidad, guardando reserva respecto a los asuntos y datos personales que conozca por razón de su cargo.","La obligación de publicar en el tablón de anuncios cualquier documento interno que traslade.","La facultad de revisar jurídicamente si los expedientes cumplen los plazos legales."],"ans":1,"exp":"El art. 53 del TREBEP y el art. 5 de la LOPDGDD imponen el deber estricto de sigilo y confidencialidad sobre los documentos y datos personales conocidos en el ejercicio del puesto."},
+  {"tema":"Tema 4 · Conserjería","q":"Durante la jornada laboral en un edificio municipal, el personal de conserjería:","opts":["Puede ausentarse libremente del puesto de control siempre que deje la puerta principal abierta.","No debe abandonar el puesto de control o recepción sin relevo o autorización expresa del responsable.","Solo debe permanecer en el mostrador durante la primera hora de la mañana.","No está obligado a portar identificación ni vestuario reglamentario."],"ans":1,"exp":"La permanencia en el puesto de vigilancia/recepción (salvo rondas o encargos autorizados) y el uso de vestuario/identificación reglamentarios son deberes básicos del servicio."},
+  {"tema":"Tema 5 · Atención Ciudadana","q":"¿Qué tipo de información administrativa puede facilitar el personal de conserjería a cualquier ciudadano sin exigir acreditación de legitimación?","opts":["Información particular sobre el estado de tramitación de un expediente sancionador.","Información general sobre localización de unidades, horarios, teléfonos, requisitos básicos e impresos.","Copias compulsadas de resoluciones de otros interesados.","Informes jurídicos vinculantes sobre recursos administrativos."],"ans":1,"exp":"La información general (ubicación de oficinas, horarios, servicios, modelos de solicitud) es pública y se facilita a cualquier ciudadano sin necesidad de acreditar condición de interesado."},
+  {"tema":"Tema 5 · Atención Ciudadana","q":"En la atención presencial al ciudadano, ¿qué porcentaje aproximado del impacto comunicativo corresponde a la comunicación no verbal (postura, mirada, expresión facial)?","opts":["Menos del 10 %.","Aproximadamente el 25 %.","Más del 65 %.","Exactamente el 50 %."],"ans":2,"exp":"En comunicación interpersonal presencial, los elementos no verbales y paraverbales superan ampliamente el 65-70 % del impacto inicial en la acogida."},
+  {"tema":"Tema 5 · Atención Ciudadana","q":"La capacidad de hacer cumplir una norma del edificio (por ejemplo, impedir el paso a una zona restringida) de forma firme, educada, clara y sin agresividad ni sumisión se denomina:","opts":["Empatía pasiva.","Asertividad.","Parafraseo.","Proxémica."],"ans":1,"exp":"La asertividad permite expresar límites y normas con firmeza y respeto, evitando tanto la agresividad como la pasividad."},
+  {"tema":"Tema 5 · Atención Ciudadana","q":"Si un ciudadano acude muy alterado y enfadado al mostrador de conserjería, ¿cuál es la pauta correcta de actuación?","opts":["Elevar el tono de voz por encima del suyo para imponer la autoridad.","Interrumpirle de inmediato y decirle que se marche si no se calma.","Mantener la calma, escuchar sin discutir y derivar al responsable.","Darle la razón aunque incumpla las normas para evitar un conflicto."],"ans":2,"exp":"El autocontrol emocional, la escucha activa sin interrupciones, la empatía y la orientación a la solución (o derivación al superior) desactivan la hostilidad."},
+  {"tema":"Tema 5 · Atención Telefónica","q":"En la atención telefónica institucional, ¿cuándo es recomendable descolgar una llamada entrante y quién debe colgar primero al finalizar?","opts":["Después del quinto tono y debe colgar primero el empleado público.","Antes del tercer tono y debe esperarse a que cuelgue primero el ciudadano.","Antes del sexto tono y cuelgan ambos a la vez.","Es indiferente el número de tonos mientras se salude al final."],"ans":1,"exp":"La regla estándar de calidad telefónica exige descolgar antes del tercer tono, identificarse institucionalmente y esperar a que cuelgue primero el interlocutor externo."},
+  {"tema":"Tema 5 · Atención Telefónica","q":"Si transferimos una llamada a una extensión interna y esta comunica o no responde, ¿cada cuánto tiempo debemos retomar la llamada para informar al ciudadano?","opts":["Cada 5 segundos.","Cada 20-30 segundos.","Cada 3 minutos.","No se debe retomar nunca hasta que descuelguen."],"ans":1,"exp":"Retomar la llamada en espera cada 20-30 segundos evita la sensación de abandono y permite ofrecer al ciudadano dejar un recado o llamar más tarde."},
+  {"tema":"Tema 5 · Listines Telefónicos","q":"Respecto a los listines telefónicos internos del Ayuntamiento que incluyen nombres, puestos y extensiones o móviles corporativos:","opts":["Pueden entregarse libremente a cualquier empresa comercial que los solicite en conserjería.","Son de uso exclusivamente profesional/interno y están sujetos a la normativa de protección de datos.","Solo deben actualizarse una vez cada cinco años.","No deben incluir teléfonos de emergencia para no saturar el documento."],"ans":1,"exp":"Los directorios internos contienen datos personales de empleados públicos y son de uso exclusivamente profesional, debiendo actualizarse continuamente ante altas, bajas o traslados."},
+  {"tema":"Tema 6 · Control de Accesos","q":"En el control de accesos a zonas administrativas internas, conforme al principio de minimización de datos de la LOPDGDD, ¿qué actuación es correcta respecto al DNI del visitante?","opts":["Retener el DNI físico en conserjería hasta que el visitante abandone el edificio.","Fotocopiar siempre el DNI por ambas caras para archivarlo.","Solicitarlo únicamente a efectos de comprobación visual y anotar en el registro los datos mínimos imprescindibles, devolviéndolo en el acto.","Dejar el libro de registro abierto sobre el mostrador para que todos los visitantes vean quién ha entrado antes."],"ans":2,"exp":"La AEPD prohíbe retener o fotocopiar innecesariamente el DNI en controles de acceso ordinarios; basta comprobar la identidad, anotar los datos mínimos y custodiar el registro fuera de la vista de terceros."},
+  {"tema":"Tema 6 · Apertura y Cierre","q":"Al acudir a realizar la apertura matinal de un edificio municipal, observas que la cerradura principal está forzada y una ventana rota. ¿Cuál es la actuación correcta?","opts":["Entrar rápidamente, desconectar la alarma y recoger los cristales antes de que llegue el personal.","No entrar ni tocar nada para no alterar posibles pruebas y avisar de inmediato a la Policía Local y al superior responsable.","Abrir todas las ventanas para ventilar y seguir con la jornada normal.","Intentar reparar la cerradura antes de avisar a nadie."],"ans":1,"exp":"Ante indicios de intrusión o robo, nunca debe accederse ni manipularse la escena por seguridad personal y preservación de pruebas, avisando de inmediato a Policía Local (092/112) y responsables."},
+  {"tema":"Tema 6 · Apertura y Cierre","q":"¿En qué orden debe realizarse la ronda de cierre de un edificio municipal de varias plantas?","opts":["De la planta baja hacia la última planta superior.","De las plantas superiores hacia abajo, comprobando que no quede nadie y cerrando ventanas, grifos y luces.","Solo en la planta baja y el vestíbulo principal.","Apagando primero el interruptor general de todo el edificio antes de revisar las plantas."],"ans":1,"exp":"La ronda de cierre se realiza de arriba hacia abajo para ir desalojando y verificando cada planta hacia la salida, dejando la activación de alarma y cierre exterior para el final."},
+  {"tema":"Tema 6 · Apertura y Cierre","q":"¿Cómo deben identificarse las llaves guardadas en el armario llavero de conserjería por motivos de seguridad?","opts":["Con una etiqueta que indique claramente 'Caja Fuerte Alcaldía' o 'Archivo Confidencial'.","Mediante códigos o numeración interna y dentro de un armario cerrado con llave.","Colgadas en un tablero abierto detrás de la puerta principal sin llave.","Llevándolas todas en el bolsillo fuera del horario laboral."],"ans":1,"exp":"La codificación numérica evita que, en caso de extravío o sustracción de una llave, quien la encuentre sepa qué dependencia sensible abre."},
+  {"tema":"Tema 6 · Instalaciones","q":"En el Cuadro General de Mando y Protección (CGMP), ¿qué dispositivo protege a las personas contra contactos indirectos (derivaciones a tierra) y dispone de un botón de prueba 'T'?","opts":["El Pequeño Interruptor Automático (PIA).","El Interruptor Diferencial (ID).","El contador de energía activa.","El transformador de timbre."],"ans":1,"exp":"El Interruptor Diferencial (ID) detecta fugas de corriente a tierra protegiendo a las personas frente a electrocución y cuenta con pulsador de test ('T') para verificar su disparo."},
+  {"tema":"Tema 6 · Instalaciones","q":"Según el RITE (IT 3.8), ¿cuáles son los límites de temperatura del aire en recintos calefactados y refrigerados de edificios administrativos?","opts":["No superior a 23 °C en invierno y no inferior a 24 °C en verano.","No superior a 21 °C en calefacción y no inferior a 26 °C en refrigeración.","No superior a 19 °C en invierno y no inferior a 27 °C en verano, sin límite de fecha.","No existe ningún límite reglamentario en edificios municipales."],"ans":1,"exp":"RITE (IT 3.8): ≤ 21 °C en calefacción y ≥ 26 °C en refrigeración (humedad relativa 30-70 %). Los 19 °C / 27 °C del RDL 14/2022 fueron temporales y dejaron de aplicarse el 1 de noviembre de 2023."},
+  {"tema":"Tema 6 · Instalaciones","q":"Si una persona queda atrapada en el ascensor del edificio municipal, ¿qué debe hacer el Portero/a-Mantenedor/a?","opts":["Forzar las puertas de piso con una palanca para sacarla cuanto antes.","Cortar la corriente del edificio y subir al techo de la cabina.","Tranquilizar a la persona a través del interfono, no forzar nunca las puertas y avisar de inmediato al servicio de urgencias 24h de la empresa mantenedora.","Esperar al día siguiente a que venga el técnico de mantenimiento ordinario."],"ans":2,"exp":"Nunca deben forzarse las puertas del ascensor ni manipular la maquinaria sin habilitación específica; la prioridad es tranquilizar al usuario y avisar a la empresa mantenedora 24h o bomberos."},
+  {"tema":"Tema 7 · Correspondencia","q":"Conforme al artículo 42.2 de la Ley 39/2015 (LPACAP), cuando una notificación administrativa en papel se practica en el domicilio del interesado y nadie se hace cargo de ella:","opts":["Se da por notificada automáticamente en ese mismo instante sin más trámite.","Se repite una sola vez, en hora distinta, dentro de los tres días siguientes.","Se repite el intento tres veces en el mismo día a la misma hora.","Se devuelve inmediatamente al archivo sin intentar una segunda entrega."],"ans":1,"exp":"El art. 42.2 de la Ley 39/2015 establece que se repetirá el intento por una sola vez y en una hora distinta dentro de los tres días siguientes (con margen de al menos 3 horas entre ambos)."},
+  {"tema":"Tema 7 · Correspondencia","q":"¿Qué modalidad de envío postal urgente acredita de forma fehaciente tanto la entrega como el contenido literal del texto enviado?","opts":["La carta ordinaria.","El burofax con certificación de contenido.","El impreso publicitario sin dirección.","La valija interna ordinaria."],"ans":1,"exp":"El burofax (y telegrama) con certificación de texto acredita fehacientemente frente a terceros tanto la fecha de envío/entrega como el contenido exacto del documento."},
+  {"tema":"Tema 7 · Correspondencia","q":"Cuando la correspondencia de salida del Ayuntamiento se remite mediante el sistema de 'Franqueo Pagado' concertado con Correos:","opts":["Se pegan sellos individuales de curso legal en cada una de las cartas.","Cajetín de Franqueo Pagado impreso y albarán de depósito.","Se depositan sueltos en cualquier buzón callejero sin ningún tipo de control.","Solo sirve para los envíos al extranjero que se hagan con urgencia."],"ans":1,"exp":"El franqueo pagado requiere que los sobres lleven el cajetín autorizado y se presenten en admisión masiva junto con su albarán de depósito."},
+  {"tema":"Tema 7 · Correspondencia","q":"Ante la recepción en conserjería de un paquete o sobre sospechoso (sin remitente, con cables, manchas aceitosas o peso anormal), ¿cuál es el protocolo correcto?","opts":["Abrir una esquina con cuidado para comprobar qué contiene.","Sumergirlo en un cubo con agua o sacudirlo.","No abrirlo ni manipularlo, aislar la zona, evacuar a las personas cercanas y avisar de inmediato a seguridad y Fuerzas y Cuerpos de Seguridad.","Guardarlo dentro de un cajón cerrado hasta que venga el destinatario."],"ans":2,"exp":"Ante un paquete sospechoso nunca se debe abrir, mover, sacudir ni mojar; se debe aislar, evacuar el entorno inmediato y avisar a los cuerpos de seguridad."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"Según la norma ISO 216 (Serie A), ¿cuáles son las dimensiones exactas de una hoja DIN A4 y cuál es su gramaje estándar de oficina?","opts":["297 x 420 mm y 120 g/m².","210 x 297 mm y 80 g/m².","148 x 210 mm y 60 g/m².","841 x 1189 mm y 80 g/m²."],"ans":1,"exp":"El formato estándar DIN A4 mide 210 x 297 mm y el gramaje habitual de oficina es 80 g/m² (el A3 mide 297 x 420 mm y el A5 mide 148 x 210 mm)."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"Si necesitamos fotocopiar un documento original en tamaño DIN A3 reduciéndolo para que quepa completo en una hoja DIN A4, ¿qué porcentaje de escala debemos seleccionar?","opts":["50 %.","71 %.","141 %.","200 %."],"ans":1,"exp":"La relación lineal entre formatos consecutivos de la serie DIN A es raíz de 2 (1,414): para reducir de A3 a A4 se aplica el 71 % (1/1,414), y para ampliar de A4 a A3 el 141 %."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"Al retirar un atasco de papel en el interior de una fotocopiadora láser multifunción, ¿qué precaución de seguridad es fundamental?","opts":["Tirar con fuerza en sentido contrario al avance usando unas tijeras metálicas.","Cuidado con la unidad fusora, muy caliente, y tirar suave del papel.","Limpiar el tambor fotosensible con alcohol y un estropajo abrasivo.","Dejar las compuertas abiertas mientras se vuelve a encender la máquina."],"ans":1,"exp":"El fusor fija el tóner mediante calor intenso (pudiendo causar quemaduras) y el tambor fotosensible es muy delicado frente a arañazos y luz directa."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"¿Qué equipo de reprografía utiliza un 'máster' perforado térmicamente sobre un cilindro entintado para realizar tiradas muy altas de copias a bajo coste?","opts":["La plastificadora térmica.","La multicopista o duplicadora digital.","La encuadernadora de canutillo.","El escáner plano."],"ans":1,"exp":"Las duplicadoras digitales (multicopistas) graban un máster que se enrolla en un tambor de tinta líquida, resultando idóneas para grandes tiradas de un mismo original."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"Al utilizar una plastificadora de rodillos calientes, ¿por qué extremo debe introducirse siempre la funda o cartera de plastificar?","opts":["Por el extremo abierto para que salga el aire.","Por el borde cerrado (unido), nunca por el extremo abierto.","De forma diagonal.","Es indiferente por qué lado se introduzca."],"ans":1,"exp":"Si se introduce por el extremo abierto, las láminas se separan y se enrollan alrededor de los rodillos calientes provocando un grave atasco."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"¿Qué tipo de encuadernación permite una apertura total de 360 grados del documento?","opts":["Encuadernación térmica encolada en el lomo del documento.","Encuadernación de espiral, metálica o plástica.","Grapado lateral simple en el margen izquierdo de las hojas.","Carpeta de fástener con dos varillas metálicas en la parte superior."],"ans":1,"exp":"La encuadernación en espiral continuo permite girar completamente las hojas 360 grados sobre sí mismas."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"Para destruir documentos en papel que contienen datos personales en una oficina municipal conforme a la LOPDGDD, ¿qué tipo de destructora de papel debe emplearse?","opts":["De corte en tiras anchas (nivel P-1).","De corte en partículas (confeti) o microcorte.","Cualquier papelera abierta sin triturar.","Una guillotina manual cortando el folio en dos mitades."],"ans":1,"exp":"Para garantizar la imposibilidad de reconstrucción de datos personales se exigen destructoras de corte cruzado en partículas o microcorte (DIN 66399 P-3/P-4 o superior)."},
+  {"tema":"Tema 4 · Conserjería","q":"¿Qué función de «información y atención» corresponde a conserjería?","opts":["Informar al público sobre ubicación de dependencias, horarios y trámites básicos.","Informar sobre el estado concreto de los expedientes de cada ciudadano.","Resolver dudas jurídicas sobre el contenido de las solicitudes.","Emitir certificados de empadronamiento a quien los pida."],"ans":0,"exp":"Es información general; la particular se deriva."},
+  {"tema":"Tema 4 · Conserjería","q":"¿Qué comprenden las rondas de inspección del servicio de conserjería?","opts":["La vigilancia de las instalaciones y el control del tránsito de personas.","La auditoría de seguridad informática de los equipos del edificio.","La realización de obras de reforma y ampliación en las dependencias.","La toma de declaración escrita a las personas que acceden."],"ans":0,"exp":"Forman parte de la vigilancia y custodia."},
+  {"tema":"Tema 5 · Listines Telefónicos","q":"Los listines telefónicos internos se organizan por:","opts":["Orden orgánico (servicios) y alfabético, destacando las emergencias.","Orden cronológico de alta de cada servicio.","Orden de antigüedad del personal, sin destacar emergencias.","Orden alfabético de apellidos del personal únicamente."],"ans":0,"exp":"Incluyen copia digital e impresa plastificada."},
+  {"tema":"Tema 5 · Listines Telefónicos","q":"Al atender el teléfono, la llamada debe descolgarse:","opts":["Antes del tercer tono.","Después del quinto tono, para no parecer urgente.","En cuanto suene, sin saludar, para ganar tiempo.","Tras comprobar quién llama."],"ans":0,"exp":"Regla de oro: antes del tercer tono y saludo institucional."},
+  {"tema":"Tema 6 · Instalaciones","q":"Al controlar un acceso, el DNI del visitante debe:","opts":["Comprobarse visualmente sin retenerlo ni fotocopiarlo.","Retenerse hasta que el visitante abandone el edificio.","Fotocopiarse y archivarse en conserjería.","Escanearse y guardarse en el registro de visitas."],"ans":0,"exp":"Principio de minimización de datos (LOPDGDD)."},
+  {"tema":"Tema 6 · Instalaciones","q":"Las llaves del armario llavero se identifican con:","opts":["Códigos numéricos, sin nombres de despachos sensibles.","El nombre completo de cada despacho.","Etiquetas con el nombre de la persona responsable.","Cinta de color, sin ningún código."],"ans":0,"exp":"Está prohibido hacer copias sin autorización."},
+  {"tema":"Tema 7 · Correspondencia","q":"Ante un paquete sospechoso (sin remitente, cables visibles), se debe:","opts":["No abrirlo ni moverlo, aislar la zona, evacuar y avisar a 112/091/092.","Abrirlo con cuidado, con un compañero presente, para comprobar el contenido.","Sumergirlo en agua para neutralizar cualquier posible contenido.","Trasladarlo cuanto antes al exterior del edificio sin agitarlo."],"ans":0,"exp":"No abrir, no mover, no sacudir ni sumergir."},
+  {"tema":"Tema 7 · Correspondencia","q":"El burofax permite acreditar:","opts":["La entrega y el contenido literal del texto.","Solo la fecha de depósito del envío.","Únicamente la identidad del destinatario.","Solo que el envío se ha depositado."],"ans":0,"exp":"Acredita fehacientemente entrega y contenido."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"Para reducir de A3 a A4 en una fotocopiadora se aplica aproximadamente:","opts":["71 %.","50 %.","141 %.","86 %."],"ans":0,"exp":"Es 1/√2; ampliar de A4 a A3 es 141 %."},
+  {"tema":"Tema 8 · Reprografía y Oficina","q":"¿Qué caracteriza a la encuadernación con espiral?","opts":["Permite una apertura total de 360°.","Se fija mediante encolado por calor.","Permite añadir hojas abriendo el canutillo.","Utiliza grapas metálicas en el lomo."],"ans":0,"exp":"El canutillo permite añadir hojas; la térmica encola por calor."}
+];
+
+// Baraja las opciones (la correcta deja de estar casi siempre en la B)
+function shuffleOptions(arr) {
+  arr.forEach(function (it) {
+    var correct = it.opts[it.ans];
+    for (var i = it.opts.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = it.opts[i]; it.opts[i] = it.opts[j]; it.opts[j] = t;
+    }
+    it.ans = it.opts.indexOf(correct);
+  });
+}
+shuffleOptions(QUESTIONS_DATA);
+
+
+let questions = [];
+let userAnswers = {};
+let isGraded = false;
+let timeLeft = Math.round(QUESTIONS_DATA.length * 0.6) * 60;
+let timerInterval = null;
+
+function shuffle(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (isGraded) return;
+    timeLeft--;
+    if (timeLeft <= 0) {
+      timeLeft = 0;
+      updateTimerDisplay();
+      gradeQuiz(true);
+      return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+  const s = (timeLeft % 60).toString().padStart(2, '0');
+  const el = document.getElementById('timer');
+  el.textContent = `${m}:${s}`;
+  if (timeLeft <= 120) el.classList.add('timer-warn');
+  else el.classList.remove('timer-warn');
+}
+
+function renderQuiz() {
+  const form = document.getElementById('quizForm');
+  form.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  questions.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `q-card-${idx}`;
+    card.innerHTML = `
+      <div class="q-header">
+        <span>Pregunta ${idx + 1} de ${questions.length}</span>
+        <span class="q-tema">${item.tema}</span>
+      </div>
+      <div class="q-text">${item.q}</div>
+      <div class="options" id="opts-${idx}">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="option" id="lbl-${idx}-${oIdx}" onclick="selectOption(${idx}, ${oIdx})">
+            <input type="radio" name="q${idx}" value="${oIdx}">
+            <span><strong>${letters[oIdx]})</strong> ${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp-${idx}">
+        <strong>Explicación:</strong> ${item.exp}
+      </div>
+    `;
+    form.appendChild(card);
+  });
+  updateAnsweredCount();
+}
+
+function selectOption(qIdx, oIdx) {
+  if (isGraded) return;
+  userAnswers[qIdx] = oIdx;
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach((el, i) => {
+    el.classList.toggle('selected', i === oIdx);
+    el.querySelector('input').checked = (i === oIdx);
+  });
+  updateAnsweredCount();
+}
+
+function updateAnsweredCount() {
+  const count = Object.keys(userAnswers).length;
+  document.getElementById('answeredCount').textContent = `Respondidas: ${count} / ${questions.length}`;
+}
+
+function gradeQuiz(auto = false) {
+  if (isGraded) return;
+  if (!auto) {
+    const unanswered = questions.length - Object.keys(userAnswers).length;
+    if (unanswered > 0 && !confirm(`Tienes ${unanswered} preguntas sin responder. ¿Deseas finalizar y corregir ahora?`)) {
+      return;
+    }
+  }
+  isGraded = true;
+  clearInterval(timerInterval);
+
+  let ok = 0, ko = 0, blank = 0;
+  questions.forEach((item, idx) => {
+    const chosen = userAnswers[idx];
+    const card = document.getElementById(`q-card-${idx}`);
+    const correctLbl = document.getElementById(`lbl-${idx}-${item.ans}`);
+    correctLbl.classList.add('correct');
+
+    if (chosen === undefined) {
+      blank++;
+      card.dataset.status = 'wrong';
+    } else if (chosen === item.ans) {
+      ok++;
+      card.dataset.status = 'ok';
+    } else {
+      ko++;
+      card.dataset.status = 'wrong';
+      document.getElementById(`lbl-${idx}-${chosen}`).classList.add('wrong');
+    }
+    document.getElementById(`exp-${idx}`).classList.add('show');
+    card.querySelectorAll('input').forEach(inp => inp.disabled = true);
+  });
+
+  // Penalización 4:1 -> cada 4 fallos restan 1 acierto
+  const netHits = ok - (ko / 4);
+  const rawScore = (netHits / questions.length) * 10;
+  const finalScore = Math.max(0, rawScore);
+
+  if (window.HistorialPM) HistorialPM.guardar({ tipo: 'Test Temas 4-8', total: questions.length, ok: ok, fail: ko, blank: blank, nota: finalScore,
+    segundos: Math.round(QUESTIONS_DATA.length * 0.6) * 60 - timeLeft,
+    items: questions.map(function (it, i) { return { t: it.tema, q: it.q, s: userAnswers[i] === undefined ? 'b' : (userAnswers[i] === it.ans ? 'o' : 'f') }; }) });
+  document.getElementById('finalScore').textContent = finalScore.toFixed(2).replace('.', ',');
+  document.getElementById('statOk').textContent = ok;
+  document.getElementById('statKo').textContent = ko;
+  document.getElementById('statBlank').textContent = blank;
+  document.getElementById('statNet').textContent = netHits.toFixed(2).replace('.', ',');
+
+  const banner = document.getElementById('statusBanner');
+  if (finalScore >= 5.0) {
+    banner.className = 'status-banner apto';
+    banner.textContent = `SUPERADO (${finalScore.toFixed(2).replace('.', ',')} / 10) — Superas el mínimo de 5,00 puntos`;
+  } else {
+    banner.className = 'status-banner no-apto';
+    banner.textContent = `NO SUPERADO (${finalScore.toFixed(2).replace('.', ',')} / 10) — Se requiere un mínimo de 5,00 puntos`;
+  }
+
+  document.getElementById('resultsPanel').classList.add('show');
+  document.getElementById('filterBar').classList.add('show');
+  document.getElementById('bottomActions').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterQuestions(mode) {
+  questions.forEach((_, idx) => {
+    const card = document.getElementById(`q-card-${idx}`);
+    if (mode === 'all') card.style.display = 'block';
+    else card.style.display = (card.dataset.status === 'wrong') ? 'block' : 'none';
+  });
+}
+
+function resetQuiz(doShuffle) {
+  isGraded = false;
+  userAnswers = {};
+  timeLeft = Math.round(QUESTIONS_DATA.length * 0.6) * 60;
+  if (doShuffle) shuffleOptions(QUESTIONS_DATA);
+  questions = doShuffle ? shuffle(QUESTIONS_DATA) : [...QUESTIONS_DATA];
+  document.getElementById('resultsPanel').classList.remove('show');
+  document.getElementById('filterBar').classList.remove('show');
+  document.getElementById('bottomActions').style.display = 'flex';
+  updateTimerDisplay();
+  renderQuiz();
+  startTimer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+function showStartOverlay(title, info, onStart, isActive) {
+  var ov = document.createElement('div');
+  ov.id = 'startOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg,#f1f5f9);color:var(--text,#0f172a);display:flex;align-items:center;justify-content:center;padding:1.5rem;text-align:center;';
+  ov.innerHTML = '<div style="max-width:460px"><h2 style="font-size:1.4rem;margin-bottom:.6rem">' + title + '</h2>' +
+    '<p style="margin-bottom:1.4rem;opacity:.85">' + info + '</p>' +
+    '<button class="btn btn-primary" id="startBtn" style="padding:.8rem 2rem;font-size:1.05rem;cursor:pointer">Comenzar</button>' +
+    '<p style="margin-top:1.2rem"><a href="test.html" style="color:inherit;opacity:.8">&larr; Volver a ejercicios</a></p></div>';
+  document.body.appendChild(ov);
+  document.getElementById('startBtn').onclick = function () { ov.remove(); onStart(); };
+  window.addEventListener('beforeunload', function (e) {
+    if (!document.getElementById('startOverlay') && isActive()) { e.preventDefault(); e.returnValue = ''; }
+  });
+}
+
+questions = [...QUESTIONS_DATA];
+renderQuiz();
+(function () {
+  var n = QUESTIONS_DATA.length, mins = Math.round(n * 0.6);
+  document.querySelector('.sub').textContent = n + ' preguntas · 4 alternativas · Penalización 4:1 · Tiempo: ' + mins + ' min';
+  document.querySelector('.filter-btn').textContent = 'Ver todas (' + n + ')';
+  updateTimerDisplay();
+  showStartOverlay('Test Temas 4 a 8', n + ' preguntas · ' + mins + ' minutos · penalización 4:1. El cronómetro empieza al pulsar Comenzar.', startTimer, function () { return !isGraded; });
+})();
+</script>
+</body>
+</html>
