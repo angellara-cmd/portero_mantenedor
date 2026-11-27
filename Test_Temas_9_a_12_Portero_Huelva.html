@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Parcial Temas 9 a 12 — Portero/a-Mantenedor/a Ayto. Huelva</title>
+<style>
+  :root {
+    --bg: #f1f5f9;
+    --surface: #ffffff;
+    --surface-alt: #f8fafc;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --border: #cbd5e1;
+    --primary: #0f766e;
+    --primary-light: #ccfbf1;
+    --accent: #0d9488;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+  }
+  [data-theme="dark"] {
+    --bg: #0b1120;
+    --surface: #111827;
+    --surface-alt: #1e293b;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --primary: #2dd4bf;
+    --primary-light: rgba(45, 212, 191, 0.14);
+    --accent: #5eead4;
+    --success: #4ade80;
+    --success-bg: rgba(74, 222, 128, 0.15);
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding-bottom: 5rem;
+  }
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 1rem;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .top-left { display: flex; align-items: center; gap: 0.6rem; }
+  .btn {
+    background: var(--surface-alt); border: 1px solid var(--border); color: var(--text);
+    padding: 0.45rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.84rem;
+    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn-primary:hover { opacity: 0.92; }
+  .stats-bar { display: flex; align-items: center; gap: 0.85rem; font-size: 0.85rem; font-weight: 700; }
+  .timer {
+    background: var(--primary-light); color: var(--primary);
+    padding: 0.35rem 0.75rem; border-radius: 999px; font-variant-numeric: tabular-nums;
+  }
+  .timer.low { background: var(--danger-bg); color: var(--danger); }
+  .container { max-width: 920px; margin: 1.5rem auto; padding: 0 1rem; }
+  .header-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.5rem; margin-bottom: 1.5rem; border-top: 5px solid var(--accent);
+  }
+  .header-card h1 { font-size: 1.4rem; color: var(--primary); margin-bottom: 0.4rem; }
+  .header-card p { font-size: 0.9rem; color: var(--text-muted); }
+  .results-panel {
+    display: none; background: var(--surface); border: 2px solid var(--accent);
+    border-radius: 14px; padding: 1.5rem; margin-bottom: 1.75rem;
+  }
+  .results-panel.show { display: block; }
+  .score-big { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0.3rem 0; }
+  .score-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem; margin: 1rem 0;
+  }
+  .score-box {
+    background: var(--surface-alt); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.75rem; text-align: center;
+  }
+  .score-box strong { display: block; font-size: 1.25rem; }
+  .score-box span { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+  .q-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.25rem 1.35rem; margin-bottom: 1rem;
+  }
+  .q-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.55rem; font-size: 0.76rem; font-weight: 700; color: var(--text-muted);
+  }
+  .q-badge {
+    background: var(--primary-light); color: var(--primary);
+    padding: 0.18rem 0.6rem; border-radius: 999px;
+  }
+  .q-text { font-weight: 600; font-size: 0.96rem; margin-bottom: 0.85rem; }
+  .opts { display: flex; flex-direction: column; gap: 0.45rem; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 0.9rem; background: var(--surface); transition: 0.12s;
+  }
+  .opt:hover { border-color: var(--accent); background: var(--surface-alt); }
+  .opt.selected { background: var(--primary-light); border-color: var(--primary); font-weight: 500; }
+  .opt.correct { background: var(--success-bg) !important; border-color: var(--success) !important; color: var(--success); font-weight: 600; }
+  .opt.wrong { background: var(--danger-bg) !important; border-color: var(--danger) !important; color: var(--danger); }
+  .exp {
+    display: none; margin-top: 0.75rem; padding: 0.75rem 0.9rem;
+    background: var(--surface-alt); border-left: 4px solid var(--accent);
+    border-radius: 6px; font-size: 0.85rem; color: var(--text);
+  }
+  .exp.show { display: block; }
+  .footer-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="top-left">
+    <a href="test.html" class="btn">&larr; Ejercicios</a>
+    <button class="btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+  <div class="stats-bar">
+    <span id="answeredCount">0 / 40</span>
+    <span class="timer" id="timerDisplay">25:00</span>
+    <button class="btn btn-primary" id="gradeBtnTop" onclick="gradeExam()">Corregir</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header-card">
+    <h1>Test Parcial: Bloque III · Temas 9 a 12 (<span class="nQ">40</span> Preguntas)</h1>
+    <p>Protocolo, Salas y Audiovisuales, Mantenimiento Preventivo/Correctivo, Prevención de Riesgos Laborales y Ayuntamiento de Huelva · Penalización 4:1.</p>
+  </div>
+
+  <div class="results-panel" id="resultsPanel">
+    <div style="font-weight:700;color:var(--text-muted);font-size:0.85rem;">NOTA EQUIVALENTE SOBRE 10,00 PUNTOS</div>
+    <div class="score-big" id="finalScore">0,00 pts</div>
+    <div id="passStatus" style="font-weight:700;margin-bottom:0.5rem;"></div>
+    <div class="score-grid">
+      <div class="score-box"><strong id="resOk" style="color:var(--success)">0</strong><span>Aciertos</span></div>
+      <div class="score-box"><strong id="resFail" style="color:var(--danger)">0</strong><span>Fallos</span></div>
+      <div class="score-box"><strong id="resBlank">0</strong><span>En blanco</span></div>
+      <div class="score-box"><strong id="resTime">00:00</strong><span>Tiempo usado</span></div>
+    </div>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.8rem;">
+      <button class="btn" onclick="filterQuestions('all')">Ver todas (<span class="nQ">40</span>)</button>
+      <button class="btn" onclick="filterQuestions('wrong')">Ver solo falladas</button>
+      <button class="btn" onclick="filterQuestions('blank')">Ver en blanco</button>
+      <button class="btn btn-primary" onclick="location.reload()">Repetir test</button>
+    </div>
+  </div>
+
+  <div id="questionsContainer"></div>
+
+  <div class="footer-actions">
+    <button class="btn btn-primary" style="padding:0.8rem 1.75rem;font-size:1rem;" onclick="gradeExam()">Finalizar y Corregir Test Parcial</button>
+  </div>
+</div>
+
+<script src="historial.js"></script>
+<script>
+const QUESTIONS = [
+  {"t":"Tema 9","q":"Conforme al artículo 6 de la Ley 39/1981 por la que se regula el uso de la bandera de España, ¿dónde debe ondear permanentemente la bandera de España junto a las banderas autonómica y municipal?","opts":["Únicamente en los días festivos nacionales y en el balcón principal.","Fuera de los edificios de todas las Administraciones.","Exclusivamente en la sede de las Diputaciones Provinciales y de la Corona.","Solo en los salones de actos cuando asista un miembro del Gobierno."],"a":1,"e":"Art. 3 y art. 6 Ley 39/1981: ondeará diariamente y ocupará lugar preferente en el exterior y en el interior."},
+  {"t":"Tema 9","q":"En caso de declararse 'luto oficial' en un Ayuntamiento, ¿cómo debe colocarse una bandera oficial situada en un mástil de exterior frente a una bandera de interior?","opts":["La de exterior se iza a media asta y la de interior incorpora un crespón negro en la moharra.","Ambas se bajan completamente guardándose en el almacén.","La de interior se iza a media asta y la de exterior lleva crespón negro.","Se sustituyen ambas por una bandera completamente negra."],"a":0,"e":"Regla protocolaria: exterior a media asta; interior (mástil fijo) con crespón negro en la moharra."},
+  {"t":"Tema 9","q":"En el montaje de una sala de actos con formato 'Auditorio' o 'Teatro' (filas de sillas orientadas hacia un escenario o mesa presidencial), ¿qué aspecto de seguridad debe respetarse estrictamente?","opts":["Unir todas las sillas con bridas metálicas bloqueando los pasillos laterales.","Mantener libres pasillos y salidas con el ancho reglamentario.","Colocar la mesa de sonido delante de la salida de emergencia trasera.","Apagar la señalización luminosa de emergencia durante la proyección."],"a":1,"e":"El Código Técnico de la Edificación (DB-SI) exige mantener libres los recorridos y anchuras de evacuación."},
+  {"t":"Tema 9","q":"Al conectar un ordenador portátil a un proyector moderno, ¿qué ventaja ofrece la interfaz digital 'HDMI' frente a la antigua 'VGA'?","opts":["HDMI lleva vídeo digital y audio en un cable; VGA solo vídeo analógico.","VGA permite distancias de cable de hasta cien metros sin amplificador.","HDMI funciona sin necesidad de tarjeta gráfica en el ordenador portátil.","VGA transmite audio digital estéreo además del vídeo analógico."],"a":0,"e":"HDMI = vídeo digital + audio digital; VGA = solo vídeo analógico."},
+  {"t":"Tema 9","q":"En Windows, ¿qué atajo de teclado rápido permite alternar entre los modos de proyección ('Solo pantalla de PC', 'Duplicado', 'Ampliar', 'Solo segunda pantalla') al conectar un portátil a un proyector?","opts":["Ctrl + Alt + Supr.","Tecla Windows + P.","Alt + F4.","Ctrl + Shift + Esc."],"a":1,"e":"Win + P abre directamente el panel de proyección en Windows."},
+  {"t":"Tema 9","q":"En una mesa de mezclas de sonido de un salón de actos, si un micrófono de mesa está encendido pero nadie está hablando por él durante una intervención de otro ponente:","opts":["Se debe subir su fader al máximo para captar el sonido ambiente.","Conviene silenciarlo para evitar ruidos de papeles, respiraciones y riesgo de acoples acústicos.","Se debe desconectar su cable XLR tirando del cable.","Se debe activar la alimentación Phantom +48 V en todos los canales."],"a":1,"e":"Mantener abiertos micrófonos sin uso suma ruido de fondo y favorece el efecto Larsen."},
+  {"t":"Tema 9","q":"¿Qué función cumple el filtro antipop o paravientos de espuma colocado sobre la cápsula de un micrófono de voz?","opts":["Amplificar la señal eléctrica del micrófono en veinte decibelios.","Atenuar los golpes de aire de las consonantes.","Convertir un micrófono dinámico de cable en uno inalámbrico de petaca.","Eliminar la necesidad del cable de tierra de la mesa de mezclas."],"a":1,"e":"Evita el 'popeo' por ráfagas de aire directas sobre el diafragma."},
+  {"t":"Tema 9","q":"En el almacenamiento de sillas apilables tras desmontar un salón de actos municipal, la norma práctica y preventiva establece:","opts":["Apilar columnas de hasta 25 sillas hasta tocar el techo de la sala.","Respetar el límite de apilado del fabricante y no obstruir cuadros eléctricos ni BIE.","Dejarlas apiladas en el descansillo de la escalera de evacuación.","Apilarlas boca abajo unas sobre otras sin ningún carro auxiliar."],"a":1,"e":"Evita el vuelco de pilas inestables y mantiene accesibles los medios de protección."},
+  {"t":"Tema 9","q":"Cuando en un acto institucional intervienen varios oradores desde un atril con micrófono de cuello de ganso, ¿a qué distancia aproximada debe situarse la cápsula respecto a la boca del orador?","opts":["Pegada a los labios, tocándolos para captar mejor la voz del orador.","Entre 15 y 25 cm, fuera del eje directo de soplido.","A más de metro y medio de distancia, para evitar cualquier ruido de soplido.","Por debajo de la cintura del orador, apuntando hacia sus manos."],"a":1,"e":"Distancia óptima de captación clara sin saturación ni golpes de aire."},
+  {"t":"Tema 9","q":"En la preparación de una mesa presidencial para un acto oficial en el Ayuntamiento de Huelva, ¿qué elementos básicos debe revisar el personal subalterno antes del inicio?","opts":["Que las persianas estén bajadas y las luces del pasillo apagadas durante el acto.","Tarjetones, agua, carpetas, prueba de micrófonos y banderas.","La liquidación trimestral del IVA y el cierre de caja del Ayuntamiento.","El inventario de herramientas del taller municipal y del almacén de obras."],"a":1,"e":"Checklist estándar de preparación de mesa presidencial."},
+  {"t":"Tema 10","q":"En el mantenimiento de una instalación eléctrica interior, si un tubo fluorescente antiguo va a sustituirse por un tubo LED directo a 230 V (sin reactancia), ¿qué modificación técnica requiere previamente la luminaria?","opts":["Ninguna, basta con cambiar el tubo dejando la reactancia ferromagnética y el cebador convencional.","Retirar o puentear el cebador o recablear eliminando la reactancia según esquema del fabricante, siempre sin tensión.","Aumentar el calibre del PIA a 32 amperios.","Conectar el cable verde-amarillo al portalámparas."],"a":1,"e":"La reactancia ferromagnética provoca pérdidas y parpadeos si no se adapta conforme al esquema del tubo LED."},
+  {"t":"Tema 10","q":"¿Qué herramienta de comprobación básica permite verificar si existe tensión eléctrica en un enchufe o borne antes de manipularlo?","opts":["Un calibre o pie de rey con escala milimétrica.","Un polímetro o comprobador bipolar homologado.","Un nivel de burbuja de al menos sesenta centímetros.","Una llave grifa tipo Stilson de catorce pulgadas."],"a":1,"e":"El polímetro o verificador bipolar comprueba fehacientemente la ausencia de tensión (3.ª Regla de Oro)."},
+  {"t":"Tema 10","q":"En fontanería, ¿qué función desempeña una 'válvula antirretorno' o de retención en una red de agua o grupo de presión?","opts":["Regular el caudal de salida de la cisterna según la presión de la red.","Permitir el paso en un solo sentido e impedir el retroceso.","Mezclar agua fría y caliente hasta mantenerla a 38 °C de forma constante.","Purgar el aire acumulado en los radiadores durante el arranque del sistema."],"a":1,"e":"Impide el flujo inverso en tuberías y grupos de bombeo."},
+  {"t":"Tema 10","q":"Al cambiar un latiguillo flexible trenzado de conexión entre la llave de escuadra y un grifo de lavabo, ¿qué elemento garantiza la estanqueidad en sus extremos?","opts":["Cinta aislante de PVC enrollada sobre las roscas de la tuerca.","Las juntas planas de goma alojadas en las tuercas de ambos extremos.","Silicona acética aplicada en el interior del tubo flexible.","Soldadura de estaño-plata en ambos extremos del latiguillo."],"a":1,"e":"Los latiguillos sellan por compresión axial mediante junta plana interna; poner teflón en la rosca puede impedir que la junta asiente."},
+  {"t":"Tema 10","q":"Si una cisterna de inodoro rebosa agua continuamente por el rebosadero interior del mecanismo de descarga hacia la taza, la avería se localiza en:","opts":["El flotador o boya, que no cierra la válvula de entrada.","La junta inferior de cierre de la campana de descarga de la cisterna.","El bote sifónico del cuarto de baño que está situado bajo el suelo.","El aireador del lavabo, que está enroscado en la boca del grifo."],"a":0,"e":"Si el nivel sube por encima del rebosadero, es que la válvula de llenado (flotador) no corta el paso de agua."},
+  {"t":"Tema 10","q":"En albañilería y mantenimiento básico de paramentos, ¿qué diferencia al 'cemento rápido' respecto al mortero tradicional de cemento Portland?","opts":["El rápido fragua en minutos; el mortero normal tarda horas.","El cemento rápido se amasa sin agua y el mortero normal se amasa con aceite mineral.","El mortero normal fragua en pocos segundos y el cemento rápido tarda varios días.","El cemento rápido solo es válido para pegar madera y piezas de plástico."],"a":0,"e":"El cemento rápido se amasa en pequeñas cantidades por su fraguado ultrarrápido."},
+  {"t":"Tema 10","q":"En el mantenimiento de pintura de interiores de edificios públicos, ¿qué tipo de pintura es la más habitual para paredes y techos de yeso por su transpirabilidad, rápido secado, bajo olor y fácil limpieza con agua?","opts":["Esmalte sintético al disolvente.","Pintura plástica (al agua / acrílica o vinílica).","Barniz poliuretano de dos componentes.","Minio de plomo antioxidante."],"a":1,"e":"La pintura plástica al agua es el estándar en paramentos interiores."},
+  {"t":"Tema 10","q":"Antes de pintar una superficie metálica exterior (como una reja o barandilla de hierro) que presenta puntos de oxidación superficial, el orden correcto de trabajo es:","opts":["Aplicar directamente dos manos de pintura plástica sobre el óxido existente.","Cepillar el óxido, dar imprimación antioxidante y esmaltar.","Lavar con abundante agua y pintar encima mientras la superficie está húmeda.","Cubrir el hierro con aguaplast de yeso y pintar cuando esté seco."],"a":1,"e":"Sin saneado previo e imprimación antioxidante, el óxido vuelve a aflorar levantando la pintura."},
+  {"t":"Tema 10","q":"En cerrajería, si un muelle cierrapuertas hidráulico aéreo cierra la puerta demasiado rápido golpeando violentamente contra el marco, ¿cómo se regula?","opts":["Cortando el brazo articulado con una sierra para acortar el recorrido.","Ajustando las válvulas reguladoras del cierrapuertas.","Aflojando los tornillos de las bisagras de la hoja de la puerta.","Quitando el aceite hidráulico del interior del cuerpo del cierrapuertas."],"a":1,"e":"Los cierrapuertas hidráulicos tienen dos tornillos de regulación: velocidad general (1) y golpe final de encaje del resbalón (2)."},
+  {"t":"Tema 10","q":"En el mantenimiento básico de herramientas manuales de taller (martillos, destornilladores, alicates, llaves fijas), una regla fundamental de seguridad y conservación es:","opts":["Utilizar los destornilladores como cinceles o palancas golpeando su mango con un martillo.","Mantenerlas limpias y ordenadas y descartar las dañadas o gastadas.","Afilar los alicates universales con una amoladora sin protección ocular.","Guardar las herramientas mezcladas con productos químicos corrosivos."],"a":1,"e":"El uso indebido de herramientas manuales es una causa frecuente de accidentes laborales."},
+  {"t":"Tema 11","q":"Conforme al artículo 17.2 de la Ley 31/1995 de Prevención de Riesgos Laborales, ¿cuándo deberá el empresario o Administración proporcionar a sus trabajadores Equipos de Protección Individual (EPI) adecuados?","opts":["Siempre, como primera medida y antes de haber evaluado los riesgos del puesto.","Cuando no puedan evitarse ni limitarse con medidas colectivas.","Únicamente cuando el trabajador los solicite por escrito y pague el 50 % de su importe.","Solo en los trabajos que se realicen fuera del término municipal."],"a":1,"e":"Art. 17.2 LPRL: los EPI son la última barrera cuando la protección colectiva/organizativa no basta."},
+  {"t":"Tema 11","q":"Según el Real Decreto 773/1997 sobre utilización de Equipos de Protección Individual (EPI), todo EPI comercializado en la Unión Europea debe llevar obligatoriamente:","opts":["El marcado CE de conformidad junto con el folleto informativo en español.","Únicamente una etiqueta con el nombre del trabajador.","El sello del Ayuntamiento donde se utilice.","Una garantía de duración de diez años."],"a":0,"e":"RD 773/1997 exige marcado CE y folleto informativo comprensible."},
+  {"t":"Tema 11","q":"De acuerdo con el Real Decreto 486/1997 sobre disposiciones mínimas de seguridad y salud en los lugares de trabajo, la anchura mínima de las puertas exteriores y de los pasillos de circulación será respectivamente de:","opts":["80 centímetros para puertas y 1 metro para pasillos.","60 centímetros para puertas y 80 centímetros para pasillos.","1,20 metros para puertas y 2 metros para pasillos.","70 centímetros para puertas y 90 centímetros para pasillos."],"a":0,"e":"Anexo I.A.5 RD 486/1997: anchura mínima de 80 cm en puertas exteriores y 1 m en pasillos."},
+  {"t":"Tema 11","q":"Según el Anexo III del Real Decreto 486/1997, en los locales de trabajo cerrados donde se realicen trabajos sedentarios propios de oficinas o similares, la temperatura estará comprendida entre:","opts":["Entre 17 °C y 27 °C (con limitaciones energéticas).","Entre 14 °C y 25 °C, propias de los trabajos no sedentarios.","Entre 10 °C y 30 °C, salvo que haya climatización activa.","Entre 22 °C y 28 °C en cualquier época del año."],"a":0,"e":"Anexo III.3.a RD 486/1997: 17-27 °C para trabajos sedentarios; 14-25 °C para trabajos ligeros."},
+  {"t":"Tema 11","q":"En el uso de productos químicos de limpieza o mantenimiento (Reglamento CLP), ¿qué indica el pictograma de un rombo con borde rojo y una llama sobre un círculo?","opts":["Inflamable: se enciende con facilidad en presencia de una fuente de ignición.","Comburente: puede provocar o agravar un incendio.","Corrosivo: ataca a los metales y a la piel por contacto directo con ellos.","Gas a presión: puede explotar al calentarse dentro de su recipiente cerrado."],"a":1,"e":"Llama sola = inflamable; Llama sobre un círculo = comburente (ej. oxígeno, peróxidos)."},
+  {"t":"Tema 11","q":"En caso de salpicadura accidental de un producto químico irritante o corrosivo en los ojos de un trabajador, la actuación inmediata de primeros auxilios consiste en:","opts":["Frotar fuertemente los párpados y aplicar después una pomada antibiótica.","Lavar con abundante agua o suero fisiológico al menos 15-20 minutos, con los párpados abiertos, y acudir a urgencias.","Neutralizar el producto echando vinagre o bicarbonato directamente en el ojo.","Tapar ambos ojos con algodón seco sin lavarlos y esperar a que pase."],"a":1,"e":"Irrigación abundante inmediata durante 15-20 minutos para diluir y arrastrar el agente químico."},
+  {"t":"Tema 11","q":"Ante una persona inconsciente que NO respira con normalidad tras comprobar la seguridad del entorno y alertar al 112/061, ¿cuál es la relación correcta de compresiones torácicas y ventilaciones de rescate en la Reanimación Cardiopulmonar (RCP) básica de adultos?","opts":["15 compresiones torácicas seguidas de 2 ventilaciones.","30 compresiones torácicas seguidas de 2 ventilaciones.","5 compresiones torácicas seguidas de 1 ventilación.","50 compresiones torácicas seguidas de 5 ventilaciones."],"a":1,"e":"Protocolo ERC: 30:2 a 100-120 lpm y 5-6 cm de profundidad (o solo compresiones continuas si no se está entrenado/no hay barrera)."},
+  {"t":"Tema 11","q":"Si una persona consciente sufre un atragantamiento grave por obstrucción completa de la vía aérea (no puede hablar, toser ni respirar), ¿qué maniobra de primeros auxilios debe aplicarse tras darle 5 palmadas interescapulares sin éxito?","opts":["Colocarla tumbada boca arriba y darle agua fría para que trague.","La maniobra de Heimlich: compresiones abdominales hacia dentro y arriba.","Inclinarle la cabeza hacia atrás e introducir los dedos a ciegas en la garganta.","Aplicarle hielo en la nuca y esperar a que expulse el objeto."],"a":1,"e":"Alternar 5 palmadas en la espalda + 5 compresiones abdominales (Heimlich)."},
+  {"t":"Tema 11","q":"En la clasificación de señales de seguridad del RD 485/1997, las señales de 'Obligación' (por ejemplo, uso obligatorio de calzado de seguridad o guantes) tienen forma y color:","opts":["Redonda, pictograma blanco sobre fondo azul.","Triangular, pictograma negro sobre fondo amarillo.","Redonda, pictograma negro sobre fondo blanco con borde y banda transversal rojos.","Cuadrada, pictograma blanco sobre fondo verde."],"a":0,"e":"Redonda + azul = Obligación; Redonda + borde/banda roja = Prohibición."},
+  {"t":"Tema 11","q":"¿Cuál es el orden correcto de actuación ante cualquier accidente o emergencia laboral según la conducta 'PAS'?","opts":["1. Socorrer; 2. Avisar; 3. Proteger.","1. Proteger; 2. Avisar; 3. Socorrer.","1. Avisar; 2. Socorrer; 3. Proteger.","1. Proteger; 2. Socorrer; 3. Avisar."],"a":1,"e":"PAS: Proteger (a uno mismo, al entorno y al accidentado), Avisar (112/061) y Socorrer."},
+  {"t":"Tema 12","q":"De acuerdo con el artículo 124 de la Ley 7/1985 (LBRL), en los Municipios de Gran Población como Huelva, el Alcalde ostenta el tratamiento de:","opts":["Ilustrísimo Señor (Ilmo. Sr.) en todos los casos.","Excelencia (Excelentísimo/a Señor/a).","Señoría, como en el tratamiento de los magistrados.","Magnífico Señor, tratamiento propio de los rectores."],"a":1,"e":"Art. 124.3 LBRL: El Alcalde tendrá el tratamiento de Excelencia."},
+  {"t":"Tema 12","q":"Conforme al artículo 126.2 de la Ley 7/1985 (LBRL), en el Ayuntamiento de Huelva el número de miembros de la Junta de Gobierno Local nombrados por el Alcalde:","opts":["No podrá exceder de un tercio del número legal de miembros del Pleno, además del Alcalde.","Será exactamente la mitad más uno de los concejales del Pleno.","No podrá superar los cinco miembros en ningún caso.","Deberá incluir obligatoriamente a todos los portavoces de la oposición."],"a":0,"e":"Art. 126.2 LBRL: hasta un tercio del número legal de miembros del Pleno (27 / 3 = 9), además del Alcalde."},
+  {"t":"Tema 12","q":"¿Qué concejalía firma las bases de esta convocatoria de Portero/a-Mantenedor/a?","opts":["Régimen Interior, Recursos Humanos y Modernización Digital.","Economía y Hacienda.","Presidencia y Relaciones Institucionales.","Participación Ciudadana."],"a":0,"e":"El anuncio del BOP lo firma la Concejal Delegada de Régimen Interior, Recursos Humanos y Modernización Digital."},
+  {"t":"Tema 12","q":"¿Cuál de los siguientes espacios naturales emblemáticos de la ciudad de Huelva constituye un paraje natural protegido en la confluencia de los ríos Tinto y Odiel?","opts":["El Paraje Natural Marismas del Odiel.","El Parque Nacional de Sierra Nevada.","El Paraje Natural Torcal de Antequera.","El Parque Natural Cabo de Gata-Níjar."],"a":0,"e":"Marismas del Odiel (Reserva de la Biosfera UNESCO) es el espacio natural emblemático de Huelva capital."},
+  {"t":"Tema 12","q":"¿Qué monumento histórico-arquitectónico de Huelva, construido a finales del siglo XIX por la Río Tinto Company Limited como embarcadero de mineral sobre el río Odiel, es Bien de Interés Cultural (BIC)?","opts":["El Muelle del Tinto (Muelle de Mineral de la Compañía de Riotinto).","El Puente de Triana.","El Acueducto de los Milagros.","La Torre del Oro."],"a":0,"e":"El Muelle del Tinto es uno de los símbolos arquitectónicos e industriales más representativos de Huelva."},
+  {"t":"Tema 12","q":"El equipo de gobierno del Ayuntamiento de Huelva de la legislatura iniciada en 2023 se estructura en:","opts":["Doce concejalías y tres tenientes de alcalde.","Quince concejalías y cinco tenientes de alcalde.","Ocho concejalías y dos tenientes de alcalde.","Veinte concejalías y tres tenientes de alcalde."],"a":0,"e":"Según la web municipal, el gobierno de 2023 se organiza en doce concejalías y tres tenencias de Alcaldía."},
+  {"t":"Tema 12","q":"De acuerdo con la Base Primera de la convocatoria del Ayuntamiento de Huelva, el sistema selectivo elegido para cubrir las 6 plazas de Portero/a-Mantenedor/a es el de:","opts":["Oposición libre.","Concurso-oposición.","Concurso de méritos excepcional.","Sorteo público entre inscritos en el SAE."],"a":1,"e":"Concurso-oposición (fase de oposición hasta 10 puntos y fase de concurso hasta 3 puntos)."},
+  {"t":"Tema 12","q":"En la fase de oposición de la convocatoria de Portero/a-Mantenedor/a del Ayuntamiento de Huelva, el ejercicio único tipo test consta de 100 preguntas con 4 respuestas alternativas en un tiempo máximo de:","opts":["90 minutos.","60 minutos.","120 minutos.","45 minutos."],"a":1,"e":"100 preguntas en 60 minutos (36 segundos por pregunta de media)."},
+  {"t":"Tema 12","q":"Según el baremo de puntuación establecido en las Bases de la convocatoria del Ayuntamiento de Huelva, ¿cuál es la puntuación máxima alcanzable en la fase de oposición y cuál es la nota mínima para superar el ejercicio?","opts":["Máximo 10 puntos y mínimo 5 puntos.","Máximo 20 puntos y mínimo 10 puntos.","Máximo 10 puntos y mínimo 6 puntos.","Máximo 15 puntos y mínimo 7,5 puntos."],"a":0,"e":"Fase de oposición: hasta 10 puntos, siendo necesario obtener al menos 5 puntos para aprobar."},
+  {"t":"Tema 12","q":"En el ejercicio tipo test de esta convocatoria del Ayuntamiento de Huelva, por cada pregunta contestada erróneamente se penalizará con:","opts":["La mitad del valor de una respuesta acertada (-0,05 puntos).","Un cuarto del valor de una respuesta acertada (-0,025 puntos).","Un tercio del valor de una respuesta acertada (-0,033 puntos).","No existe penalización por respuestas erróneas."],"a":1,"e":"Penalización 4:1: cada 4 fallos restan 1 acierto (+0,10 acierto / -0,025 fallo)."}
+];
+
+// Baraja las opciones en cada intento (la correcta deja de estar casi siempre en la B)
+QUESTIONS.forEach(function (it) {
+  var correct = it.opts[it.a];
+  for (var i = it.opts.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = it.opts[i]; it.opts[i] = it.opts[j]; it.opts[j] = t;
+  }
+  it.a = it.opts.indexOf(correct);
+});
+
+
+let answers = {}, graded = false, secondsLeft = 25 * 60, timerInterval = null;
+
+function shuffleCounts() {
+  var n = QUESTIONS.length;
+  var c = document.getElementById('answeredCount'); if (c) c.textContent = '0 / ' + n;
+  document.querySelectorAll('.nQ').forEach(function (el) { el.textContent = n; });
+}
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  const letters = ['A', 'B', 'C', 'D'];
+  container.innerHTML = QUESTIONS.map((item, idx) => `
+    <div class="q-card" id="qcard-${idx}" data-status="blank">
+      <div class="q-meta">
+        <span>PREGUNTA ${idx + 1} DE ${QUESTIONS.length}</span>
+        <span class="q-badge">${item.t}</span>
+      </div>
+      <div class="q-text">${idx + 1}. ${item.q}</div>
+      <div class="opts">
+        ${item.opts.map((opt, oIdx) => `
+          <div class="opt" id="opt-${idx}-${oIdx}" onclick="chooseOpt(${idx}, ${oIdx})">
+            <strong>${letters[oIdx]})</strong>
+            <span>${opt}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="exp" id="exp-${idx}"><strong>Fundamento / Explicación:</strong> ${item.e}</div>
+    </div>
+  `).join('');
+}
+
+function chooseOpt(qIdx, oIdx) {
+  if (graded) return;
+  if (answers[qIdx] === oIdx) delete answers[qIdx];
+  else answers[qIdx] = oIdx;
+  document.querySelectorAll(`#qcard-${qIdx} .opt`).forEach((el, i) => el.classList.toggle('selected', answers[qIdx] === i));
+  document.getElementById('answeredCount').textContent = `${Object.keys(answers).length} / ${QUESTIONS.length}`;
+}
+
+function gradeExam() {
+  if (graded) return;
+  graded = true;
+  clearInterval(timerInterval);
+  let ok = 0, fail = 0, blank = 0;
+  QUESTIONS.forEach((item, idx) => {
+    const chosen = answers[idx];
+    const card = document.getElementById(`qcard-${idx}`);
+    document.getElementById(`opt-${idx}-${item.a}`).classList.add('correct');
+    if (chosen === undefined) { blank++; card.dataset.status = 'blank'; }
+    else if (chosen === item.a) { ok++; card.dataset.status = 'ok'; }
+    else { fail++; card.dataset.status = 'wrong'; document.getElementById(`opt-${idx}-${chosen}`).classList.add('wrong'); }
+    document.getElementById(`exp-${idx}`).classList.add('show');
+  });
+  const valOk = 10 / QUESTIONS.length;
+  const valFail = valOk / 4;
+  const finalScore = Math.max(0, (ok * valOk) - (fail * valFail));
+  const elapsed = (25 * 60) - secondsLeft;
+  document.getElementById('finalScore').textContent = `${finalScore.toFixed(2).replace('.', ',')} pts`;
+  const statusEl = document.getElementById('passStatus');
+  statusEl.textContent = finalScore >= 5.0 ? '✔ APTO (Supera el 5,00)' : '✘ NO APTO (No alcanza el 5,00)';
+  statusEl.style.color = finalScore >= 5.0 ? 'var(--success)' : 'var(--danger)';
+  document.getElementById('resOk').textContent = ok;
+  document.getElementById('resFail').textContent = fail;
+  document.getElementById('resBlank').textContent = blank;
+  document.getElementById('resTime').textContent = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
+  if (window.HistorialPM) HistorialPM.guardar({ tipo: 'Test Temas 9-12', total: (typeof NMAIN !== 'undefined' ? NMAIN : QUESTIONS.length), ok: ok, fail: fail, blank: blank, nota: finalScore, segundos: elapsed,
+    items: QUESTIONS.map(function (it, i) { return { t: it.t, q: it.q, r: it.r ? 1 : 0, s: answers[i] === undefined ? 'b' : (answers[i] === it.a ? 'o' : 'f') }; }) });
+  document.getElementById('resultsPanel').classList.add('show');
+  document.getElementById('gradeBtnTop').disabled = true;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterQuestions(mode) {
+  QUESTIONS.forEach((_, idx) => {
+    const card = document.getElementById(`qcard-${idx}`);
+    card.style.display = (mode === 'all' || card.dataset.status === mode) ? 'block' : 'none';
+  });
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+    const s = String(secondsLeft % 60).padStart(2, '0');
+    const el = document.getElementById('timerDisplay');
+    el.textContent = `${m}:${s}`;
+    if (secondsLeft <= 180) el.classList.add('low');
+    if (secondsLeft <= 0) gradeExam();
+  }, 1000);
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('huelva_pm_theme', isDark ? 'light' : 'dark');
+}
+if (localStorage.getItem('huelva_pm_theme') === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.getElementById('themeBtn').textContent = '☀️';
+}
+
+function showStartOverlay(title, info, onStart, isActive) {
+  var ov = document.createElement('div');
+  ov.id = 'startOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg,#f1f5f9);color:var(--text,#0f172a);display:flex;align-items:center;justify-content:center;padding:1.5rem;text-align:center;';
+  ov.innerHTML = '<div style="max-width:460px"><h2 style="font-size:1.4rem;margin-bottom:.6rem">' + title + '</h2>' +
+    '<p style="margin-bottom:1.4rem;opacity:.85">' + info + '</p>' +
+    '<button class="btn btn-primary" id="startBtn" style="padding:.8rem 2rem;font-size:1.05rem;cursor:pointer">Comenzar</button>' +
+    '<p style="margin-top:1.2rem"><a href="test.html" style="color:inherit;opacity:.8">&larr; Volver a ejercicios</a></p></div>';
+  document.body.appendChild(ov);
+  document.getElementById('startBtn').onclick = function () { ov.remove(); onStart(); };
+  window.addEventListener('beforeunload', function (e) {
+    if (!document.getElementById('startOverlay') && isActive()) { e.preventDefault(); e.returnValue = ''; }
+  });
+}
+
+renderQuestions();
+shuffleCounts();
+showStartOverlay(document.title.split(' — ')[0], QUESTIONS.length + ' preguntas · ' + 25 + ' minutos · +0,10 acierto / −0,025 fallo. El cronómetro empieza al pulsar Comenzar.', startTimer, function () { return !graded; });
+</script>
+</body>
+</html>
